@@ -29,7 +29,12 @@ instancją.
   ustawionych tam filtrów (zakres dat, projekt lub klient, płatność, osoby, aktywności).
 - Logo firmy na stronie i w PDF.
 
+Repo: <https://github.com/websystemspl/kimai-client-report> (publiczne, MIT).
+Wydanie z paczką ZIP: `releases/tag/v1.0.0`.
+
 ## Instalacja
+
+Rozpakuj `ClientReportBundle.zip` z wydania do `var/plugins/`, albo z kopii roboczej:
 
 ```
 cp -r kimai-client-report <kimai>/var/plugins/ClientReportBundle
