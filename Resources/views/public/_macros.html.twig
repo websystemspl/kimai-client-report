@@ -1,0 +1,4 @@
+{% macro hm(seconds) %}
+{%- set s = seconds < 0 ? 0 : seconds -%}
+{{- s // 3600 }}:{{ '%02d'|format((s % 3600) // 60) -}}
+{% endmacro %}

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Raporty dla klientów{% endblock %}
+
+{% block main %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Raporty udostępnione klientom</h3>
+            <a href="{{ path('client_report_create') }}" class="btn btn-primary">Nowy link</a>
+        </div>
+        {% if reports is empty %}
+            <div class="card-body text-secondary">
+                Nie ma jeszcze żadnego linku. „Nowy link" tworzy adres, który klient otwiera bez logowania.
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                    <tr>
+                        <th>Zakres</th>
+                        <th>Okres</th>
+                        <th>Link</th>
+                        <th class="text-center">Wyświetlenia</th>
+                        <th>Stan</th>
+                        <th class="w-1"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for report in reports %}
+                        {% set url = url('client_report_share', {'token': report.token}) %}
+                        <tr{% if not report.accessible %} class="text-secondary"{% endif %}>
+                            <td>
+                                <div>{{ report.scopeName }}</div>
+                                {% if report.project %}
+                                    <div class="text-secondary small">{{ report.customerName }}</div>
+                                {% else %}
+                                    <div class="text-secondary small">wszystkie projekty</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-nowrap">
+                                {{ report.dateStart|date('d.m.Y') }} - {{ report.dateEnd|date('d.m.Y') }}
+                                <div class="text-secondary small">
+                                    {{ report.locale|upper }}{% if not report.showNonBillable %}, tylko płatne{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm font-monospace" readonly
+                                       value="{{ url }}" onclick="this.select();document.execCommand('copy');">
+                                <div class="text-secondary small">kliknij, żeby skopiować</div>
+                            </td>
+                            <td class="text-center">
+                                {{ report.views }}
+                                {% if report.lastViewAt %}
+                                    <div class="text-secondary small text-nowrap">{{ report.lastViewAt|date('d.m.Y H:i') }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.revoked %}
+                                    <span class="badge bg-red-lt">unieważniony</span>
+                                {% elseif report.expired %}
+                                    <span class="badge bg-orange-lt">wygasł</span>
+                                {% else %}
+                                    <span class="badge bg-green-lt">aktywny</span>
+                                {% endif %}
+                                {% if report.expiresAt %}
+                                    <div class="text-secondary small text-nowrap">do {{ report.expiresAt|date('d.m.Y') }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-nowrap">
+                                <a href="{{ url }}" target="_blank" class="btn btn-sm">Otwórz</a>
+                                {% if report.revoked %}
+                                    <a href="{{ path('client_report_restore', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
+                                       class="btn btn-sm">Przywróć</a>
+                                {% else %}
+                                    <a href="{{ path('client_report_revoke', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
+                                       class="btn btn-sm">Unieważnij</a>
+                                {% endif %}
+                                <a href="{{ path('client_report_delete', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
+                                   class="btn btn-sm btn-ghost-danger"
+                                   onclick="return confirm('Usunąć ten link na stałe?');">Usuń</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

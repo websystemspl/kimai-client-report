@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nowy link do raportu{% endblock %}
+
+{% block main %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Nowy link do raportu</h3>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Utwórz link</button>
+                <a href="{{ path('client_report_index') }}" class="btn">Anuluj</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

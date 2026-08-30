@@ -1,0 +1,190 @@
+{% import '@ClientReport/public/_macros.html.twig' as fmt %}
+{% set heading = report.title ?: (report.customerName ~ (report.project ? ' - ' ~ report.project.name : '')) %}
+<!doctype html>
+<html lang="{{ report.locale }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{ t.report }} - {{ heading }}</title>
+    <style>
+        :root {
+            --ink: #1f2430;
+            --muted: #6b7280;
+            --line: #e6e8ec;
+            --bg: #f6f7f9;
+            --card: #ffffff;
+            --accent: #c2255c;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 32px 20px 64px;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .wrap { max-width: 1000px; margin: 0 auto; }
+        header { margin-bottom: 24px; }
+        .logo { height: 26px; width: auto; display: block; margin-bottom: 18px; opacity: .85; }
+        h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+        .period { color: var(--muted); font-size: 14px; }
+        .actions { margin-top: 14px; }
+        .btn {
+            display: inline-block; padding: 8px 16px; border-radius: 8px;
+            background: var(--ink); color: #fff; text-decoration: none; font-size: 14px;
+        }
+        .summary {
+            display: grid; gap: 1px; background: var(--line);
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .summary div { background: var(--card); padding: 16px 18px; }
+        .summary dt {
+            font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+            color: var(--muted); margin-bottom: 6px;
+        }
+        .summary dd { margin: 0; font-size: 22px; font-weight: 600; }
+        .summary dd small { font-size: 13px; font-weight: 400; color: var(--muted); }
+        .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px; }
+        .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .card h2 {
+            font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+            margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--line); font-weight: 600;
+        }
+        .card table { width: 100%; border-collapse: collapse; }
+        .card td { padding: 9px 18px; border-bottom: 1px solid var(--line); }
+        .card tr:last-child td { border-bottom: 0; }
+        .card td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .entries { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+        .entries table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        .entries th {
+            font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+            text-align: left; font-weight: 600; padding: 14px 18px; border-bottom: 1px solid var(--line);
+        }
+        .entries td { padding: 13px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+        .entries tr:last-child td { border-bottom: 0; }
+        .entries .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .entries .desc { width: 40%; }
+        .nowrap { white-space: nowrap; }
+        .muted { color: var(--muted); }
+        .paid { color: var(--accent); font-weight: 600; }
+        .badge {
+            display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px;
+            background: var(--bg); color: var(--muted); font-size: 11px; border: 1px solid var(--line);
+        }
+        .empty { padding: 40px 18px; text-align: center; color: var(--muted); }
+        footer { margin-top: 28px; color: var(--muted); font-size: 12px; }
+        @media (max-width: 640px) {
+            body { padding: 20px 12px 40px; }
+            h1 { font-size: 21px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        {% if branding.logoDataUri %}
+            <img class="logo" src="{{ branding.logoDataUri }}" alt="{{ branding.company }}">
+        {% endif %}
+        <h1>{{ heading }}</h1>
+        <div class="period">{{ t.period }}: {{ report.dateStart|date('d.m.Y', false) }} - {{ report.dateEnd|date('d.m.Y', false) }}</div>
+        <div class="actions">
+            <a class="btn" href="{{ path('client_report_share_pdf', {'token': report.token}) }}">{{ t.download_pdf }}</a>
+        </div>
+    </header>
+
+    <dl class="summary">
+        <div>
+            <dt>{{ t.billable_hours }}</dt>
+            <dd class="paid">
+                {{ fmt.hm(data.billableSeconds) }}
+                {%- if data.hasNonBillable %} <small>({{ data.billablePercent }}%)</small>{% endif %}
+            </dd>
+        </div>
+        {% if data.hasNonBillable %}
+            <div>
+                <dt>{{ t.total_hours }}</dt>
+                <dd>{{ fmt.hm(data.totalSeconds) }}</dd>
+            </div>
+            <div>
+                <dt>{{ t.not_billed }}</dt>
+                <dd class="muted">{{ fmt.hm(data.nonBillableSeconds) }}</dd>
+            </div>
+        {% endif %}
+        <div>
+            <dt>{{ t.days_worked }}</dt>
+            <dd>{{ data.dayCount }}</dd>
+        </div>
+        <div>
+            <dt>{{ t.avg_daily }}</dt>
+            <dd>{{ fmt.hm(data.averageDailySeconds) }}</dd>
+        </div>
+    </dl>
+
+    {% if data.perPerson is not empty or data.perActivity is not empty %}
+        <div class="cards">
+            {% if data.perPerson is not empty %}
+                <div class="card">
+                    <h2>{{ t.by_person }}</h2>
+                    <table>
+                        {% for name, seconds in data.perPerson %}
+                            <tr><td>{{ name }}</td><td>{{ fmt.hm(seconds) }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+            {% if data.perActivity is not empty %}
+                <div class="card">
+                    <h2>{{ t.by_work_type }}</h2>
+                    <table>
+                        {% for name, seconds in data.perActivity %}
+                            <tr><td>{{ name }}</td><td>{{ fmt.hm(seconds) }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="entries">
+        {% if data.entries is empty %}
+            <div class="empty">{{ t.empty }}</div>
+        {% else %}
+            <table>
+                <thead>
+                <tr>
+                    <th>{{ t.date }}</th>
+                    <th>{{ t.time }}</th>
+                    <th class="desc">{{ t.description }}</th>
+                    <th>{{ t.person }}</th>
+                    <th>{{ t.work_type }}</th>
+                    <th class="num">{{ t.duration }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in data.entries %}
+                    <tr>
+                        <td class="nowrap">{{ entry.begin|date('d.m.Y', false) }}</td>
+                        <td class="nowrap muted">{{ entry.begin|date('H:i', false) }}{% if entry.end %} - {{ entry.end|date('H:i', false) }}{% endif %}</td>
+                        <td class="desc">
+                            {%- if entry.description %}{{ entry.description }}{% else %}<span class="muted">{{ t.no_description }}</span>{% endif -%}
+                            {%- if not entry.billable %}<span class="badge">{{ t.no_charge }}</span>{% endif -%}
+                        </td>
+                        <td class="nowrap">{{ entry.user ? entry.user.displayName : '' }}</td>
+                        <td>{{ entry.activity ? entry.activity.name : '' }}</td>
+                        <td class="num {{ entry.billable ? 'paid' : 'muted' }}">{{ fmt.hm(entry.duration) }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <footer>
+        {{ t.generated }}: {{ 'now'|date('d.m.Y H:i', timezone) }} &middot; {{ branding.company }}
+    </footer>
+</div>
+</body>
+</html>

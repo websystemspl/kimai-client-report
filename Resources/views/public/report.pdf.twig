@@ -1,0 +1,130 @@
+{% import '@ClientReport/public/_macros.html.twig' as fmt %}
+{% set heading = report.title ?: (report.customerName ~ (report.project ? ' - ' ~ report.project.name : '')) %}
+<!doctype html>
+<html lang="{{ report.locale }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ t.report }} - {{ heading }}</title>
+    {# mPDF understands neither flexbox nor grid, so everything here is tables #}
+    <style>
+        body { font-family: sans-serif; font-size: 9pt; color: #1f2430; }
+        h1 { font-size: 15pt; margin: 0 0 2mm; }
+        .period { color: #6b7280; font-size: 9pt; margin-bottom: 6mm; }
+        table { width: 100%; border-collapse: collapse; }
+        table.summary { margin-bottom: 6mm; }
+        table.summary td {
+            border: 0.2mm solid #e6e8ec; padding: 3mm; width: 25%; text-align: center;
+        }
+        table.summary .label {
+            font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3pt; color: #6b7280;
+        }
+        table.summary .value { font-size: 13pt; font-weight: bold; padding-top: 1mm; }
+        h2 {
+            font-size: 8pt; text-transform: uppercase; letter-spacing: 0.3pt; color: #6b7280;
+            margin: 0 0 2mm;
+        }
+        table.breakdown { margin-bottom: 5mm; }
+        table.breakdown td { border-bottom: 0.2mm solid #e6e8ec; padding: 1.6mm 2mm; }
+        table.breakdown td.num { text-align: right; }
+        table.entries th {
+            font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3pt; color: #6b7280;
+            text-align: left; border-bottom: 0.3mm solid #b9bec7; padding: 2mm; font-weight: bold;
+        }
+        table.entries td { border-bottom: 0.2mm solid #e6e8ec; padding: 2mm; vertical-align: top; }
+        .num { text-align: right; }
+        .muted { color: #6b7280; }
+        .paid { color: #c2255c; font-weight: bold; }
+        .badge { color: #6b7280; font-size: 7.5pt; }
+        .total td { border-top: 0.3mm solid #b9bec7; font-weight: bold; padding-top: 2.5mm; }
+    </style>
+</head>
+<body>
+{% if branding.logoDataUri %}
+    <img src="{{ branding.logoDataUri }}" alt="{{ branding.company }}" style="height: 8mm; margin-bottom: 4mm;">
+{% endif %}
+<h1>{{ heading }}</h1>
+<div class="period">{{ t.period }}: {{ report.dateStart|date('d.m.Y', false) }} - {{ report.dateEnd|date('d.m.Y', false) }}</div>
+
+<table class="summary">
+    <tr>
+        <td>
+            <div class="label">{{ t.billable_hours }}</div>
+            <div class="value paid">{{ fmt.hm(data.billableSeconds) }}</div>
+            {% if data.hasNonBillable %}<div class="label">{{ data.billablePercent }}%</div>{% endif %}
+        </td>
+        {% if data.hasNonBillable %}
+            <td>
+                <div class="label">{{ t.total_hours }}</div>
+                <div class="value">{{ fmt.hm(data.totalSeconds) }}</div>
+            </td>
+            <td>
+                <div class="label">{{ t.not_billed }}</div>
+                <div class="value muted">{{ fmt.hm(data.nonBillableSeconds) }}</div>
+            </td>
+        {% endif %}
+        <td>
+            <div class="label">{{ t.avg_daily }}</div>
+            <div class="value">{{ fmt.hm(data.averageDailySeconds) }}</div>
+            <div class="label">{{ data.dayCount }} {{ t.days_worked|lower }}</div>
+        </td>
+    </tr>
+</table>
+
+{% if data.perPerson is not empty %}
+    <h2>{{ t.by_person }}</h2>
+    <table class="breakdown">
+        {% for name, seconds in data.perPerson %}
+            <tr><td>{{ name }}</td><td class="num">{{ fmt.hm(seconds) }}</td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if data.perActivity is not empty %}
+    <h2>{{ t.by_work_type }}</h2>
+    <table class="breakdown">
+        {% for name, seconds in data.perActivity %}
+            <tr><td>{{ name }}</td><td class="num">{{ fmt.hm(seconds) }}</td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+<h2>{{ t.entries }}</h2>
+{% if data.entries is empty %}
+    <p class="muted">{{ t.empty }}</p>
+{% else %}
+    <table class="entries">
+        <thead>
+        <tr>
+            <th width="12%">{{ t.date }}</th>
+            <th width="13%">{{ t.time }}</th>
+            <th width="35%">{{ t.description }}</th>
+            <th width="15%">{{ t.person }}</th>
+            <th width="17%">{{ t.work_type }}</th>
+            <th width="8%" class="num">{{ t.duration }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entry in data.entries %}
+            <tr>
+                <td>{{ entry.begin|date('d.m.Y', false) }}</td>
+                <td class="muted">{{ entry.begin|date('H:i', false) }}{% if entry.end %} - {{ entry.end|date('H:i', false) }}{% endif %}</td>
+                <td>
+                    {%- if entry.description %}{{ entry.description }}{% else %}<span class="muted">{{ t.no_description }}</span>{% endif -%}
+                    {%- if not entry.billable %} <span class="badge">({{ t.no_charge }})</span>{% endif -%}
+                </td>
+                <td>{{ entry.user ? entry.user.displayName : '' }}</td>
+                <td>{{ entry.activity ? entry.activity.name : '' }}</td>
+                <td class="num {{ entry.billable ? 'paid' : 'muted' }}">{{ fmt.hm(entry.duration) }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td colspan="5">{{ t.billable_hours }}</td>
+            <td class="num paid">{{ fmt.hm(data.billableSeconds) }}</td>
+        </tr>
+        </tbody>
+    </table>
+{% endif %}
+
+<p class="muted" style="margin-top: 6mm;">{{ t.generated }}: {{ 'now'|date('d.m.Y H:i', timezone) }} &middot; {{ branding.company }}</p>
+</body>
+</html>

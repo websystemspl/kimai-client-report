@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{ t.gone_title }}</title>
+    <style>
+        body {
+            margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: #f6f7f9; color: #1f2430; padding: 24px;
+            font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .box {
+            background: #fff; border: 1px solid #e6e8ec; border-radius: 12px;
+            padding: 32px 36px; max-width: 460px; text-align: center;
+        }
+        .logo { height: 22px; width: auto; margin: 0 auto 20px; display: block; opacity: .85; }
+        h1 { font-size: 19px; margin: 0 0 8px; }
+        p { margin: 0; color: #6b7280; }
+    </style>
+</head>
+<body>
+<div class="box">
+    {% if branding.logoDataUri %}
+        <img class="logo" src="{{ branding.logoDataUri }}" alt="{{ branding.company }}">
+    {% endif %}
+    <h1>{{ t.gone_title }}</h1>
+    <p>{{ t.gone_body }}</p>
+</div>
+</body>
+</html>

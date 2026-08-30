@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    KimaiPlugin\ClientReportBundle\:
+        resource: '../../*'
+        exclude:
+            - '../../{DependencyInjection,Entity,Migrations,Resources,ClientReportBundle.php}'
+
+    KimaiPlugin\ClientReportBundle\Controller\:
+        resource: '../../Controller/*'
+        tags: ['controller.service_arguments']
+
+    # registered explicitly so PluginManager picks it up through the PluginInterface
+    # tag and the plugin shows in System > Plugins
+    KimaiPlugin\ClientReportBundle\ClientReportBundle: ~

@@ -1,0 +1,10 @@
+client_report_public:
+    resource: '../../Controller/ShareController.php'
+    type: attribute
+
+client_report_admin:
+    resource: '../../Controller/SharedReportController.php'
+    type: attribute
+    prefix: /{_locale}
+    defaults:
+        _locale: '%locale%'
