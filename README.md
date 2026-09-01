@@ -72,6 +72,10 @@ kanału alfa). Oryginał zostaje obok jako `logo-white-original.png`.
 Żeby zmienić markę: podmień `Resources/assets/logo.png` i stałe `COMPANY` oraz
 `LOGO_FILE` w `Report/Branding.php`.
 
+To logo dotyczy tylko raportu. Logo panelu Kimai jest osobne i siedzi w konfiguracji
+systemowej pod kluczem `theme.branding.logo` (System > Ustawienia > Branding),
+jako adres pliku.
+
 ## Jak to działa
 
 - **Dlaczego link nie wymaga logowania.** W `config/packages/security.yaml` reguły
