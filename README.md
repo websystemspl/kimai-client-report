@@ -1,40 +1,61 @@
-# ClientReport - raporty czasu pod publicznym linkiem
+# ClientReport - time reports under a public link
 
-Plugin do Kimai 2.x. Robi to, czego Kimai nie ma w rdzeniu: **adres, pod którym klient
-otwiera raport godzin bez logowania** - jako stronę i jako PDF.
+A plugin for Kimai 2.x. It does what Kimai core does not: **a URL where a client opens
+a report of hours without logging in**, as a web page and as a PDF.
 
-Napisany dla `kimai.web-systems.pl`, ale nie ma w nim niczego związanego z tą jedną
-instancją.
+Written for `kimai.web-systems.pl`, but there is nothing in it tied to that one
+instance.
 
-## Co daje
+[Polska wersja README](README.pl.md)
 
-- **Publiczny link z tokenem**: `https://<kimai>/share/<32 znaki hex>`. Klient nie ma
-  konta w Kimai i nie musi mieć.
-- **PDF pod tym samym linkiem**: `/share/<token>/pdf`, ta sama treść, układ do wysłania.
-- **Płatne i nieodpłatne na jednej kartce.** Podsumowanie zawsze liczy jedne i drugie,
-  więc klient widzi „65:43 (75,41%) z 87:09", a nie krótszą listę bez wyjaśnienia,
-  czego brakuje. Wiersze nieodpłatne dostają plakietkę „no charge". Można je ukryć
-  w tabeli - podsumowanie i tak zostaje pełne.
-- **Unieważnianie i data ważności.** Unieważniony albo wygasły link zwraca 404, tak
-  samo jak literówka w tokenie - z zewnątrz nie da się odróżnić jednego od drugiego,
-  więc nie ma jak sondować przestrzeni adresów.
-- **Licznik wejść** z datą ostatniego otwarcia.
-- **Dwa języki raportu** (angielski, polski), wybierane przy tworzeniu linku - klient
-  zagraniczny dostaje angielski niezależnie od ustawień konta, które link stworzyło.
-- Zakres: jeden projekt albo cały klient, dowolny zakres dat, opcjonalnie zawężony
-  do wybranych osób, rodzajów pracy albo tagów.
-- **Powiadomienie mailem przy pierwszym otwarciu** linku przez klienta - do osoby,
-  która link utworzyła. Kolejne wejścia widać w liczniku, maila nie ma.
-- **Przycisk „Udostępnij klientowi" na ekranie Eksportu Kimai**, z przeniesieniem
-  ustawionych tam filtrów (zakres dat, projekt lub klient, płatność, osoby, aktywności).
-- Logo firmy na stronie i w PDF.
+## What it gives you
 
-Repo: <https://github.com/websystemspl/kimai-client-report> (publiczne, MIT).
-Wydanie z paczką ZIP: `releases/tag/v1.0.0`.
+- **Public link with a token**: `https://<kimai>/share/<32 hex chars>`. The client has
+  no Kimai account and does not need one.
+- **PDF under the same link**: `/share/<token>/pdf`, same content, a layout ready to send.
+- **Billable and non-billable on one sheet.** The summary always counts both, so the
+  client sees "65:43 (75.41%) of 87:09" instead of a shorter list with no explanation of
+  what is missing. Non-billable rows get a "no charge" badge. They can be hidden from the
+  table; the summary stays complete anyway.
+- **Revocation and expiry date.** A revoked or expired link returns 404, exactly like a
+  typo in the token. From the outside one cannot be told from the other, so there is no
+  way to probe the address space.
+- **View counter** with the date of the last visit.
+- **Two report languages** (English, Polish), chosen when the link is created. A foreign
+  client gets English regardless of the settings of the account that created the link.
+- Scope: one project or a whole customer, any date range, optionally narrowed to
+  selected users, activities or tags.
+- **Email notification on first open** of the link by the client, sent to the person
+  who created it. Later visits show up in the counter, without an email.
+- **"Share with client" button on the Kimai Export screen**, carrying over the filters
+  set there (date range, project or customer, billable, users, activities).
+- Company logo on the page and in the PDF.
 
-## Instalacja
+Repository: <https://github.com/websystemspl/kimai-client-report> (public, MIT).
+Release with a ZIP package: `releases/tag/v1.0.0`.
 
-Rozpakuj `ClientReportBundle.zip` z wydania do `var/plugins/`, albo z kopii roboczej:
+## How it differs from Customer Portal
+
+[Customer Portal](https://www.kimai.org/store/customer-portal.html) gives a customer
+a standing view of a project or a whole customer: browse month by month, optional
+password, rates, budgets and charts. ClientReport is built for a different moment:
+**sending one fixed report**, usually together with an invoice.
+
+- The link is a snapshot of a chosen date range and filters (users, activities, tags),
+  not a live view the client can browse.
+- The same link gives a PDF, so the report can be attached to an invoice or archived.
+- Billable and non-billable time are shown side by side with a complete summary.
+- A link can expire and be revoked, and an invalid link is indistinguishable from a
+  wrong token.
+- The creator gets an email when the client opens the report for the first time, and
+  sees a view counter.
+- The report language is set per link, not taken from the creator's account.
+- A report is created straight from the Export screen, with the filters already set.
+
+## Installation
+
+Unpack `ClientReportBundle.zip` from the release into `var/plugins/`, or from a working
+copy:
 
 ```
 cp -r kimai-client-report <kimai>/var/plugins/ClientReportBundle
@@ -43,97 +64,108 @@ bin/console cache:clear --env=prod
 bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-Katalog **musi** nazywać się `ClientReportBundle` - Kernel szuka katalogów `*Bundle`
-i składa z tego nazwę klasy.
+The directory **must** be named `ClientReportBundle`: the Kernel looks for `*Bundle`
+directories and builds the class name from that.
 
-`var/plugins/` jest poza repozytorium Kimai, więc plugin przeżywa `git checkout <tag>`.
-Po aktualizacji Kimai wystarczy `cache:clear`.
+`var/plugins/` is outside the Kimai repository, so the plugin survives
+`git checkout <tag>`. After a Kimai update, `cache:clear` is enough.
 
-## Użycie
+## Usage
 
-Menu **Raportowanie > Raporty dla klientów** (widoczne od roli teamlead w górę).
-„Nowy link" pyta o projekt albo klienta, zakres dat, język i to, czy pokazywać wpisy
-nieodpłatne. Domyślny zakres to bieżący tydzień.
+Menu **Reporting > Raporty dla klientów** ("Client reports", visible from the teamlead
+role upwards). "Nowy link" ("New link") asks for a project or customer, a date range,
+a language and whether to show non-billable entries. The default range is the current
+week.
 
-Podział na płatne i nieodpłatne bierze się wprost z pola „Płatne" przy wpisie w Kimai -
-raport niczego nie liczy po swojemu. Trzeba to więc ustawić **przed** wysłaniem linku.
+The report the client sees is available in English and Polish. The admin panel of the
+plugin (list, form, Export screen button) is Polish only for now; see
+[Not there yet](#not-there-yet).
+
+The billable / non-billable split comes straight from the "Billable" field on the Kimai
+entry; the report does not calculate anything on its own. So it has to be set
+**before** the link is sent.
 
 ## Branding
 
-Logo siedzi w `Resources/assets/logo.png`, wczytywane przez `Report/Branding.php`
-i wstawiane jako data URI - strona musi działać dla kogoś niezalogowanego, a mPDF
-rysuje PDF ze samodzielnego stringa HTML, więc trasa serwująca plik nic by tu nie dała.
+The logo lives in `Resources/assets/logo.png`, is loaded by `Report/Branding.php` and
+inserted as a data URI: the page has to work for someone who is not logged in, and mPDF
+draws the PDF from a self-contained HTML string, so a route serving the file would not
+help here.
 
-Wersja z web-systems.pl jest biała (do ciemnego tła strony firmowej), a raport ma tło
-jasne, więc w `logo.png` leży ta sama grafika przebarwiona na kolor tekstu raportu
-(`#1f2430`; logo jest jednokolorowe, więc wystarczyła podmiana RGB przy zachowaniu
-kanału alfa). Oryginał zostaje obok jako `logo-white-original.png`.
+The version from web-systems.pl is white (for the dark background of the company site),
+while the report has a light background, so `logo.png` holds the same graphic recoloured
+to the report text colour (`#1f2430`; the logo is single-colour, so swapping RGB while
+keeping the alpha channel was enough). The original stays next to it as
+`logo-white-original.png`.
 
-Żeby zmienić markę: podmień `Resources/assets/logo.png` i stałe `COMPANY` oraz
-`LOGO_FILE` w `Report/Branding.php`.
+To change the brand: replace `Resources/assets/logo.png` and the `COMPANY` and
+`LOGO_FILE` constants in `Report/Branding.php`.
 
-To logo dotyczy tylko raportu. Logo panelu Kimai jest osobne i siedzi w konfiguracji
-systemowej pod kluczem `theme.branding.logo` (System > Ustawienia > Branding),
-jako adres pliku.
+This logo applies only to the report. The Kimai panel logo is separate and lives in the
+system configuration under the `theme.branding.logo` key (System > Settings >
+Branding), as a file URL.
 
-## Jak to działa
+## How it works
 
-- **Dlaczego link nie wymaga logowania.** W `config/packages/security.yaml` reguły
-  obejmują `^/{_locale}/` i `^/api`. Trasy `/share/...` są poza jednym i drugim, więc
-  nie trzeba ruszać konfiguracji Kimai (co i tak nie przeżyłoby aktualizacji).
-- **Dlaczego zapytanie nie ma bieżącego użytkownika.** `TimesheetRepository` pomija
-  filtrowanie po zespołach, gdy nie ma zalogowanego użytkownika („make sure that all
-  queries without a user see all projects"). To jest tu poprawne: o tym, co klient widzi,
-  zdecydowała osoba tworząca link.
-- **Formularz używa typów Kimai** (`ProjectType`, `CustomerType`, `DatePickerType`).
-  Motyw Kimai podpina do każdego pola daty własny picker, który oczekuje zlokalizowanego
-  widżetu tekstowego - zwykły `DateType` renderuje `<input type="date">` i picker czyści
-  wtedy wartość początkową.
-- **`ProjectType` dostaje `ignore_date: true`**, bez tego projekty bez ustawionego
-  zakresu dat nie pojawiają się na liście.
-- **Migracja pluginu** rejestruje się sama: rozszerzenie DI dokłada swój katalog do
+- **Why the link needs no login.** In `config/packages/security.yaml` the rules cover
+  `^/{_locale}/` and `^/api`. The `/share/...` routes are outside both, so there is no
+  need to touch the Kimai configuration (which would not survive an update anyway).
+- **Why the query has no current user.** `TimesheetRepository` skips team filtering
+  when there is no logged-in user ("make sure that all queries without a user see all
+  projects"). That is correct here: the person creating the link decided what the
+  client sees.
+- **The form uses Kimai types** (`ProjectType`, `CustomerType`, `DatePickerType`). The
+  Kimai theme attaches its own picker to every date field, and it expects a localised
+  text widget; a plain `DateType` renders `<input type="date">` and the picker then
+  clears the initial value.
+- **`ProjectType` gets `ignore_date: true`**, otherwise projects without a date range
+  do not appear in the list.
+- **The plugin migration** registers itself: the DI extension adds its directory to
   `doctrine_migrations.migrations_paths`.
-- **PDF** powstaje przez `App\Pdf\HtmlToPdfConverter` (mPDF), z osobnego szablonu -
-  mPDF nie zna flexboksa ani grida, więc układ tam stoi na tabelach.
-- **Godziny renderowane są w strefie wpisu** (`|date('H:i', false)`), a nie w domyślnej
-  strefie procesu. Dla niezalogowanego gościa ta domyślna to UTC, więc bez tego klient
-  widziałby wszystko o dwie godziny za wcześnie, mimo że zalogowanemu strona pokazywała
-  poprawne wartości. Każdy wpis Kimai niesie własną strefę, więc `false` jest tu
-  właściwą odpowiedzią.
-- **Przycisk na ekranie Eksportu** podpina się pod ogólne zdarzenie motywu
-  `ThemeEvent::CONTENT_START`, bo kontroler eksportu nie ustawia `actionName`, więc
-  `PageActionsEvent` dla tej strony w ogóle nie leci. Nadpisanie szablonu odpadło -
-  plik należy do repozytorium Kimai i łatka ginęłaby przy aktualizacji.
-- **Daty z paska filtrów** czytane są formatem locale'u żądania, z listą zapasowych
-  formatów; każdy kandydat musi się zgadzać po powrotnym sformatowaniu, więc format,
-  który tylko przypadkiem coś sparsuje, jest odrzucany.
+- **The PDF** is produced by `App\Pdf\HtmlToPdfConverter` (mPDF) from a separate
+  template. mPDF knows neither flexbox nor grid, so the layout there is built on tables.
+- **Times are rendered in the entry's timezone** (`|date('H:i', false)`), not in the
+  process default. For an anonymous visitor that default is UTC, so without this the
+  client would see everything two hours early, even though the page looked right to a
+  logged-in user. Every Kimai entry carries its own timezone, so `false` is the right
+  answer here.
+- **The Export screen button** hooks into the generic theme event
+  `ThemeEvent::CONTENT_START`, because the export controller does not set `actionName`,
+  so `PageActionsEvent` is never fired for that page. Overriding the template was ruled
+  out: the file belongs to the Kimai repository and the patch would be lost on update.
+- **Dates from the filter bar** are parsed with the request locale's format, with a list
+  of fallback formats; each candidate has to match after formatting it back, so a format
+  that parses something only by accident is rejected.
 
-## Struktura
+## Structure
 
 ```
-ClientReportBundle.php          klasa pluginu (getName/getPath są final w Bundle)
-DependencyInjection/            ładowanie usług + rejestracja katalogu migracji
-Entity/SharedReport.php         udostępniony raport: token, zakres, ważność, licznik
-Repository/                     dostęp do bazy
-Report/ReportBuilder.php        pobranie wpisów i policzenie sum
-Report/ReportData.php           model widoku
-Report/Labels.php               teksty EN/PL (za mało na katalog tłumaczeń)
-Report/Branding.php             logo i nazwa firmy
-Report/ShareNotifier.php        mail przy pierwszym otwarciu linku
-Form/SharedReportType.php       formularz tworzenia linku
-Controller/ShareController.php  strona publiczna i PDF
-Controller/SharedReportController.php  panel: lista, tworzenie, unieważnianie
-EventSubscriber/MenuSubscriber.php       pozycja w menu
-EventSubscriber/ExportPageSubscriber.php przycisk na ekranie Eksportu Kimai
-Migrations/                     tabele: raporty + trzy tabele filtrów
-Resources/assets/logo.png       logo wstawiane do raportu
-Resources/views/public/         strona dla klienta i szablon PDF
-Resources/views/admin/          lista i formularz w panelu
+ClientReportBundle.php          plugin class (getName/getPath are final in Bundle)
+DependencyInjection/            service loading + migration directory registration
+Entity/SharedReport.php         shared report: token, scope, expiry, counter
+Repository/                     database access
+Report/ReportBuilder.php        fetching entries and computing totals
+Report/ReportData.php           view model
+Report/Labels.php               EN/PL strings (too few for a translation catalogue)
+Report/Branding.php             logo and company name
+Report/ShareNotifier.php        email on first open of a link
+Form/SharedReportType.php       link creation form
+Controller/ShareController.php  public page and PDF
+Controller/SharedReportController.php  panel: list, create, revoke
+EventSubscriber/MenuSubscriber.php       menu entry
+EventSubscriber/ExportPageSubscriber.php button on the Kimai Export screen
+Migrations/                     tables: reports + three filter tables
+Resources/assets/logo.png       logo inserted into the report
+Resources/views/public/         client page and PDF template
+Resources/views/admin/          list and form in the panel
 ```
 
-## Czego jeszcze nie ma
+## Not there yet
 
-- Wielu projektów w jednym raporcie (jest albo jeden projekt, albo cały klient).
-- Konfiguracji marki z panelu - logo i nazwa firmy siedzą w plikach pluginu.
-- Stawek i kwot; raport pokazuje wyłącznie czas.
-- Podglądu raportu z poziomu panelu przed wysłaniem linku (trzeba otworzyć link).
+- Translated admin panel: its labels are hard-coded in Polish, only the client-facing
+  report is available in English.
+- Several projects in one report (it is either one project or a whole customer).
+- Brand configuration from the panel: logo and company name live in plugin files.
+- Rates and amounts; the report shows time only.
+- A preview of the report from the panel before sending the link (you have to open
+  the link).
