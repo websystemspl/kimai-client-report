@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Puts a "share with the client" button on Kimai's own export screen and carries the
@@ -26,6 +27,7 @@ final class ExportPageSubscriber implements EventSubscriberInterface
         private readonly UrlGeneratorInterface $router,
         private readonly AuthorizationCheckerInterface $security,
         private readonly LocaleService $localeService,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -51,7 +53,7 @@ final class ExportPageSubscriber implements EventSubscriberInterface
         $event->addContent(\sprintf(
             '<div class="mb-3 text-end"><a href="%s" class="btn btn-primary">%s</a></div>',
             htmlspecialchars($url, \ENT_QUOTES),
-            'Udostępnij klientowi'
+            htmlspecialchars($this->translator->trans('export.share_button', [], 'client_report'), \ENT_QUOTES)
         ));
     }
 

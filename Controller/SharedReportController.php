@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route(path: '/client-report')]
 #[IsGranted('ROLE_TEAMLEAD')]
@@ -26,6 +27,7 @@ final class SharedReportController extends AbstractController
         private readonly CustomerRepository $customers,
         private readonly UserRepository $users,
         private readonly ActivityRepository $activities,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -51,9 +53,9 @@ final class SharedReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($report->getProject() === null && $report->getCustomer() === null) {
-                $form->get('project')->addError(new \Symfony\Component\Form\FormError('Wybierz projekt albo klienta.'));
+                $form->get('project')->addError(new \Symfony\Component\Form\FormError($this->trans('error.no_scope')));
             } elseif ($report->getDateEnd() < $report->getDateStart()) {
-                $form->get('dateEnd')->addError(new \Symfony\Component\Form\FormError('Data końcowa jest przed początkową.'));
+                $form->get('dateEnd')->addError(new \Symfony\Component\Form\FormError($this->trans('error.end_before_start')));
             } else {
                 // a project already carries its customer, keeping both would only
                 // widen the report to everything that customer has
@@ -67,7 +69,7 @@ final class SharedReportController extends AbstractController
                 }
 
                 $this->reports->save($report);
-                $this->addFlash('success', 'Link do raportu utworzony.');
+                $this->addFlash('success', $this->trans('flash.created'));
 
                 return $this->redirectToRoute('client_report_index');
             }
@@ -88,7 +90,7 @@ final class SharedReportController extends AbstractController
 
         $report->revoke();
         $this->reports->save($report);
-        $this->addFlash('success', 'Link unieważniony.');
+        $this->addFlash('success', $this->trans('flash.revoked'));
 
         return $this->redirectToRoute('client_report_index');
     }
@@ -100,7 +102,7 @@ final class SharedReportController extends AbstractController
 
         $report->restore();
         $this->reports->save($report);
-        $this->addFlash('success', 'Link znów działa.');
+        $this->addFlash('success', $this->trans('flash.restored'));
 
         return $this->redirectToRoute('client_report_index');
     }
@@ -111,7 +113,7 @@ final class SharedReportController extends AbstractController
         $this->denyOnInvalidCsrf($csrfToken);
 
         $this->reports->remove($report);
-        $this->addFlash('success', 'Link usunięty.');
+        $this->addFlash('success', $this->trans('flash.deleted'));
 
         return $this->redirectToRoute('client_report_index');
     }
@@ -169,6 +171,15 @@ final class SharedReportController extends AbstractController
         }
 
         return array_map('intval', array_filter(explode(',', $raw), 'is_numeric'));
+    }
+
+    /**
+     * Flashes are translated here, not in the layout: Kimai renders them with its own
+     * "flashmessages" domain, which knows nothing about this plugin's keys.
+     */
+    private function trans(string $key): string
+    {
+        return $this->translator->trans($key, [], 'client_report');
     }
 
     private function denyOnInvalidCsrf(string $csrfToken): void

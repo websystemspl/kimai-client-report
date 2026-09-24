@@ -26,11 +26,12 @@ final class MenuSubscriber implements EventSubscriberInterface
 
         $item = new MenuItemModel(
             'client_report',
-            'Raporty dla klientów',
+            'menu.title',
             'client_report_index',
             [],
             'export'
         );
+        $item->setTranslationDomain('client_report');
         $item->setChildRoutes(['client_report_create']);
 
         $reporting = $event->getReportingMenu();

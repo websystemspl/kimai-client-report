@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="client_report.en.xlf">
+    <body>
+      <trans-unit id="menu.title">
+        <source>menu.title</source>
+        <target>Client reports</target>
+      </trans-unit>
+      <trans-unit id="export.share_button">
+        <source>export.share_button</source>
+        <target>Share with the client</target>
+      </trans-unit>
+      <trans-unit id="index.heading">
+        <source>index.heading</source>
+        <target>Reports shared with clients</target>
+      </trans-unit>
+      <trans-unit id="index.new_link">
+        <source>index.new_link</source>
+        <target>New link</target>
+      </trans-unit>
+      <trans-unit id="index.empty">
+        <source>index.empty</source>
+        <target>No links yet. "New link" creates an address the client opens without logging in.</target>
+      </trans-unit>
+      <trans-unit id="index.col.scope">
+        <source>index.col.scope</source>
+        <target>Scope</target>
+      </trans-unit>
+      <trans-unit id="index.col.period">
+        <source>index.col.period</source>
+        <target>Period</target>
+      </trans-unit>
+      <trans-unit id="index.col.link">
+        <source>index.col.link</source>
+        <target>Link</target>
+      </trans-unit>
+      <trans-unit id="index.col.views">
+        <source>index.col.views</source>
+        <target>Views</target>
+      </trans-unit>
+      <trans-unit id="index.col.status">
+        <source>index.col.status</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="index.all_projects">
+        <source>index.all_projects</source>
+        <target>all projects</target>
+      </trans-unit>
+      <trans-unit id="index.billable_only">
+        <source>index.billable_only</source>
+        <target>billable only</target>
+      </trans-unit>
+      <trans-unit id="index.click_to_copy">
+        <source>index.click_to_copy</source>
+        <target>click to copy</target>
+      </trans-unit>
+      <trans-unit id="index.status.revoked">
+        <source>index.status.revoked</source>
+        <target>revoked</target>
+      </trans-unit>
+      <trans-unit id="index.status.expired">
+        <source>index.status.expired</source>
+        <target>expired</target>
+      </trans-unit>
+      <trans-unit id="index.status.active">
+        <source>index.status.active</source>
+        <target>active</target>
+      </trans-unit>
+      <trans-unit id="index.expires_on">
+        <source>index.expires_on</source>
+        <target>until %date%</target>
+      </trans-unit>
+      <trans-unit id="index.action.open">
+        <source>index.action.open</source>
+        <target>Open</target>
+      </trans-unit>
+      <trans-unit id="index.action.restore">
+        <source>index.action.restore</source>
+        <target>Restore</target>
+      </trans-unit>
+      <trans-unit id="index.action.revoke">
+        <source>index.action.revoke</source>
+        <target>Revoke</target>
+      </trans-unit>
+      <trans-unit id="index.action.delete">
+        <source>index.action.delete</source>
+        <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="index.confirm_delete">
+        <source>index.confirm_delete</source>
+        <target>Delete this link for good?</target>
+      </trans-unit>
+      <trans-unit id="edit.heading">
+        <source>edit.heading</source>
+        <target>New report link</target>
+      </trans-unit>
+      <trans-unit id="edit.submit">
+        <source>edit.submit</source>
+        <target>Create link</target>
+      </trans-unit>
+      <trans-unit id="edit.cancel">
+        <source>edit.cancel</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="form.project">
+        <source>form.project</source>
+        <target>Project</target>
+      </trans-unit>
+      <trans-unit id="form.project.help">
+        <source>form.project.help</source>
+        <target>Pick a project or a customer. The project wins if you set both.</target>
+      </trans-unit>
+      <trans-unit id="form.customer">
+        <source>form.customer</source>
+        <target>Customer (all projects)</target>
+      </trans-unit>
+      <trans-unit id="form.date_start">
+        <source>form.date_start</source>
+        <target>From</target>
+      </trans-unit>
+      <trans-unit id="form.date_end">
+        <source>form.date_end</source>
+        <target>To</target>
+      </trans-unit>
+      <trans-unit id="form.users">
+        <source>form.users</source>
+        <target>Only these people (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.users.help">
+        <source>form.users.help</source>
+        <target>Empty = everyone who worked in this period.</target>
+      </trans-unit>
+      <trans-unit id="form.activities">
+        <source>form.activities</source>
+        <target>Only these types of work (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.activities.help">
+        <source>form.activities.help</source>
+        <target>Empty = all of them.</target>
+      </trans-unit>
+      <trans-unit id="form.tags">
+        <source>form.tags</source>
+        <target>Only these tags (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.tags.help">
+        <source>form.tags.help</source>
+        <target>Empty = tags do not matter.</target>
+      </trans-unit>
+      <trans-unit id="form.locale">
+        <source>form.locale</source>
+        <target>Report language</target>
+      </trans-unit>
+      <trans-unit id="form.show_non_billable">
+        <source>form.show_non_billable</source>
+        <target>Also show non-billable entries</target>
+      </trans-unit>
+      <trans-unit id="form.show_non_billable.help">
+        <source>form.show_non_billable.help</source>
+        <target>The summary counts both either way, so the client sees "66 of 87 hours billable". Untick to keep only billable entries in the table.</target>
+      </trans-unit>
+      <trans-unit id="form.title">
+        <source>form.title</source>
+        <target>Title (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.title.help">
+        <source>form.title.help</source>
+        <target>Page heading. Empty = customer and project name.</target>
+      </trans-unit>
+      <trans-unit id="form.expires_at">
+        <source>form.expires_at</source>
+        <target>Expires (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.expires_at.help">
+        <source>form.expires_at.help</source>
+        <target>The link stops working after this day. Empty = never expires.</target>
+      </trans-unit>
+      <trans-unit id="error.no_scope">
+        <source>error.no_scope</source>
+        <target>Pick a project or a customer.</target>
+      </trans-unit>
+      <trans-unit id="error.end_before_start">
+        <source>error.end_before_start</source>
+        <target>The end date is before the start date.</target>
+      </trans-unit>
+      <trans-unit id="flash.created">
+        <source>flash.created</source>
+        <target>Report link created.</target>
+      </trans-unit>
+      <trans-unit id="flash.revoked">
+        <source>flash.revoked</source>
+        <target>Link revoked.</target>
+      </trans-unit>
+      <trans-unit id="flash.restored">
+        <source>flash.restored</source>
+        <target>Link works again.</target>
+      </trans-unit>
+      <trans-unit id="flash.deleted">
+        <source>flash.deleted</source>
+        <target>Link deleted.</target>
+      </trans-unit>
+      <trans-unit id="mail.subject">
+        <source>mail.subject</source>
+        <target>Client opened the report: %scope% (%period%)</target>
+      </trans-unit>
+      <trans-unit id="mail.intro">
+        <source>mail.intro</source>
+        <target>The client has opened the report for the first time.</target>
+      </trans-unit>
+      <trans-unit id="mail.scope">
+        <source>mail.scope</source>
+        <target>Scope</target>
+      </trans-unit>
+      <trans-unit id="mail.period">
+        <source>mail.period</source>
+        <target>Period</target>
+      </trans-unit>
+      <trans-unit id="mail.link">
+        <source>mail.link</source>
+        <target>Link</target>
+      </trans-unit>
+      <trans-unit id="mail.footer">
+        <source>mail.footer</source>
+        <target>This message is sent on the first view only. Later views show up in the counter: Reporting &gt; Client reports.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

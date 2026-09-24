@@ -32,7 +32,7 @@ instancją.
 - Logo firmy na stronie i w PDF.
 
 Repo: <https://github.com/websystemspl/kimai-client-report> (publiczne, MIT).
-Wydanie z paczką ZIP: `releases/tag/v1.0.0`.
+Wydanie z paczką ZIP: `releases/tag/v1.1.0`.
 
 ## Instalacja
 
@@ -53,9 +53,13 @@ Po aktualizacji Kimai wystarczy `cache:clear`.
 
 ## Użycie
 
-Menu **Raportowanie > Raporty dla klientów** (widoczne od roli teamlead w górę).
-„Nowy link" pyta o projekt albo klienta, zakres dat, język i to, czy pokazywać wpisy
+Menu **Raportowanie > Raporty dla klientów** (po angielsku *Reporting > Client reports*),
+widoczne od roli teamlead w górę. **Nowy link** (*New link*) pyta o projekt albo klienta, zakres dat, język i to, czy pokazywać wpisy
 nieodpłatne. Domyślny zakres to bieżący tydzień.
+
+Panel mówi językiem zalogowanego użytkownika (w pluginie są tłumaczenia angielskie
+i polskie, pozostałe języki dostają angielski). Język raportu dla klienta ustawia się
+osobno przy każdym linku.
 
 Podział na płatne i nieodpłatne bierze się wprost z pola „Płatne" przy wpisie w Kimai -
 raport niczego nie liczy po swojemu. Trzeba to więc ustawić **przed** wysłaniem linku.
@@ -119,7 +123,7 @@ Entity/SharedReport.php         udostępniony raport: token, zakres, ważność,
 Repository/                     dostęp do bazy
 Report/ReportBuilder.php        pobranie wpisów i policzenie sum
 Report/ReportData.php           model widoku
-Report/Labels.php               teksty EN/PL (za mało na katalog tłumaczeń)
+Report/Labels.php               teksty EN/PL raportu dla klienta, wybierane per link
 Report/Branding.php             logo i nazwa firmy
 Report/ShareNotifier.php        mail przy pierwszym otwarciu linku
 Form/SharedReportType.php       formularz tworzenia linku
@@ -131,6 +135,7 @@ Migrations/                     tabele: raporty + trzy tabele filtrów
 Resources/assets/logo.png       logo wstawiane do raportu
 Resources/views/public/         strona dla klienta i szablon PDF
 Resources/views/admin/          lista i formularz w panelu
+Resources/translations/         teksty panelu (domena client_report, EN/PL)
 ```
 
 ## Czego jeszcze nie ma

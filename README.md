@@ -27,12 +27,12 @@ instance.
   selected users, activities or tags.
 - **Email notification on first open** of the link by the client, sent to the person
   who created it. Later visits show up in the counter, without an email.
-- **"Share with client" button on the Kimai Export screen**, carrying over the filters
+- **"Share with the client" button on the Kimai Export screen**, carrying over the filters
   set there (date range, project or customer, billable, users, activities).
 - Company logo on the page and in the PDF.
 
 Repository: <https://github.com/websystemspl/kimai-client-report> (public, MIT).
-Release with a ZIP package: `releases/tag/v1.0.0`.
+Release with a ZIP package: `releases/tag/v1.1.0`.
 
 ## How it differs from Customer Portal
 
@@ -72,14 +72,14 @@ directories and builds the class name from that.
 
 ## Usage
 
-Menu **Reporting > Raporty dla klientów** ("Client reports", visible from the teamlead
-role upwards). "Nowy link" ("New link") asks for a project or customer, a date range,
-a language and whether to show non-billable entries. The default range is the current
-week.
+Menu **Reporting > Client reports** (Polish: *Raportowanie > Raporty dla klientów*),
+visible from the teamlead role upwards. **New link** (*Nowy link*) asks for a project
+or customer, a date range, a language and whether to show non-billable entries. The
+default range is the current week.
 
-The report the client sees is available in English and Polish. The admin panel of the
-plugin (list, form, Export screen button) is Polish only for now; see
-[Not there yet](#not-there-yet).
+The admin panel follows the language of the logged-in user (English and Polish
+translations ship with the plugin, other languages fall back to English). The language
+of the report the client sees is set per link.
 
 The billable / non-billable split comes straight from the "Billable" field on the Kimai
 entry; the report does not calculate anything on its own. So it has to be set
@@ -146,7 +146,7 @@ Entity/SharedReport.php         shared report: token, scope, expiry, counter
 Repository/                     database access
 Report/ReportBuilder.php        fetching entries and computing totals
 Report/ReportData.php           view model
-Report/Labels.php               EN/PL strings (too few for a translation catalogue)
+Report/Labels.php               EN/PL strings of the client report, picked per link
 Report/Branding.php             logo and company name
 Report/ShareNotifier.php        email on first open of a link
 Form/SharedReportType.php       link creation form
@@ -158,12 +158,11 @@ Migrations/                     tables: reports + three filter tables
 Resources/assets/logo.png       logo inserted into the report
 Resources/views/public/         client page and PDF template
 Resources/views/admin/          list and form in the panel
+Resources/translations/         admin panel strings (client_report domain, EN/PL)
 ```
 
 ## Not there yet
 
-- Translated admin panel: its labels are hard-coded in Polish, only the client-facing
-  report is available in English.
 - Several projects in one report (it is either one project or a whole customer).
 - Brand configuration from the panel: logo and company name live in plugin files.
 - Rates and amounts; the report shows time only.

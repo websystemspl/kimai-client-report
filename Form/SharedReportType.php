@@ -32,30 +32,30 @@ final class SharedReportType extends AbstractType
         $builder
             ->add('project', ProjectType::class, [
                 'required' => false,
-                'label' => 'Projekt',
-                'help' => 'Wybierz projekt albo klienta. Projekt wygrywa, jeśli podasz oba.',
+                'label' => 'form.project',
+                'help' => 'form.project.help',
                 // without this, projects without a running date range are hidden
                 'ignore_date' => true,
                 'join_customer' => true,
             ])
             ->add('customer', CustomerType::class, [
                 'required' => false,
-                'label' => 'Klient (wszystkie projekty)',
+                'label' => 'form.customer',
             ])
             ->add('dateStart', DatePickerType::class, [
                 'input' => 'datetime_immutable',
-                'label' => 'Od',
+                'label' => 'form.date_start',
             ])
             ->add('dateEnd', DatePickerType::class, [
                 'input' => 'datetime_immutable',
-                'label' => 'Do',
+                'label' => 'form.date_end',
             ])
             ->add('users', EntityType::class, [
                 'class' => User::class,
                 'multiple' => true,
                 'required' => false,
-                'label' => 'Tylko te osoby (opcjonalnie)',
-                'help' => 'Puste = wszyscy, którzy pracowali w tym okresie.',
+                'label' => 'form.users',
+                'help' => 'form.users.help',
                 'choice_label' => static fn (User $user): string => $user->getDisplayName(),
                 'query_builder' => static fn (EntityRepository $repo) => $repo->createQueryBuilder('u')
                     ->where('u.enabled = :enabled')
@@ -66,8 +66,8 @@ final class SharedReportType extends AbstractType
                 'class' => Activity::class,
                 'multiple' => true,
                 'required' => false,
-                'label' => 'Tylko te rodzaje pracy (opcjonalnie)',
-                'help' => 'Puste = wszystkie.',
+                'label' => 'form.activities',
+                'help' => 'form.activities.help',
                 'choice_label' => 'name',
                 'query_builder' => static fn (EntityRepository $repo) => $repo->createQueryBuilder('a')
                     ->where('a.visible = :visible')
@@ -78,31 +78,33 @@ final class SharedReportType extends AbstractType
                 'class' => Tag::class,
                 'multiple' => true,
                 'required' => false,
-                'label' => 'Tylko te tagi (opcjonalnie)',
-                'help' => 'Puste = bez znaczenia, czy wpis ma tagi.',
+                'label' => 'form.tags',
+                'help' => 'form.tags.help',
                 'choice_label' => 'name',
                 'query_builder' => static fn (EntityRepository $repo) => $repo->createQueryBuilder('t')
                     ->orderBy('t.name', 'ASC'),
             ])
             ->add('locale', ChoiceType::class, [
                 'choices' => Labels::available(),
-                'label' => 'Język raportu',
+                // language names stay in their own language, whatever the UI language is
+                'choice_translation_domain' => false,
+                'label' => 'form.locale',
             ])
             ->add('showNonBillable', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Pokaż też wpisy nieodpłatne',
-                'help' => 'Podsumowanie i tak liczy jedne i drugie, więc klient widzi "66 z 87 godzin płatnych". Odznacz, żeby w tabeli zostały same płatne.',
+                'label' => 'form.show_non_billable',
+                'help' => 'form.show_non_billable.help',
             ])
             ->add('title', TextType::class, [
                 'required' => false,
-                'label' => 'Tytuł (opcjonalnie)',
-                'help' => 'Nagłówek strony. Puste = nazwa klienta i projektu.',
+                'label' => 'form.title',
+                'help' => 'form.title.help',
             ])
             ->add('expiresAt', DatePickerType::class, [
                 'input' => 'datetime_immutable',
                 'required' => false,
-                'label' => 'Wygasa (opcjonalnie)',
-                'help' => 'Po tym dniu link przestaje działać. Puste = bezterminowo.',
+                'label' => 'form.expires_at',
+                'help' => 'form.expires_at.help',
             ])
         ;
     }
@@ -111,6 +113,7 @@ final class SharedReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => SharedReport::class,
+            'translation_domain' => 'client_report',
         ]);
     }
 }

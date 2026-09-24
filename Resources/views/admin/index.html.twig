@@ -1,27 +1,28 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain 'client_report' %}
 
-{% block title %}Raporty dla klientów{% endblock %}
+{% block title %}{{ 'menu.title'|trans }}{% endblock %}
 
 {% block main %}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">Raporty udostępnione klientom</h3>
-            <a href="{{ path('client_report_create') }}" class="btn btn-primary">Nowy link</a>
+            <h3 class="card-title mb-0">{{ 'index.heading'|trans }}</h3>
+            <a href="{{ path('client_report_create') }}" class="btn btn-primary">{{ 'index.new_link'|trans }}</a>
         </div>
         {% if reports is empty %}
             <div class="card-body text-secondary">
-                Nie ma jeszcze żadnego linku. „Nowy link" tworzy adres, który klient otwiera bez logowania.
+                {{ 'index.empty'|trans }}
             </div>
         {% else %}
             <div class="table-responsive">
                 <table class="table card-table table-vcenter">
                     <thead>
                     <tr>
-                        <th>Zakres</th>
-                        <th>Okres</th>
-                        <th>Link</th>
-                        <th class="text-center">Wyświetlenia</th>
-                        <th>Stan</th>
+                        <th>{{ 'index.col.scope'|trans }}</th>
+                        <th>{{ 'index.col.period'|trans }}</th>
+                        <th>{{ 'index.col.link'|trans }}</th>
+                        <th class="text-center">{{ 'index.col.views'|trans }}</th>
+                        <th>{{ 'index.col.status'|trans }}</th>
                         <th class="w-1"></th>
                     </tr>
                     </thead>
@@ -34,50 +35,50 @@
                                 {% if report.project %}
                                     <div class="text-secondary small">{{ report.customerName }}</div>
                                 {% else %}
-                                    <div class="text-secondary small">wszystkie projekty</div>
+                                    <div class="text-secondary small">{{ 'index.all_projects'|trans }}</div>
                                 {% endif %}
                             </td>
                             <td class="text-nowrap">
-                                {{ report.dateStart|date('d.m.Y') }} - {{ report.dateEnd|date('d.m.Y') }}
+                                {{ report.dateStart|date_short }} - {{ report.dateEnd|date_short }}
                                 <div class="text-secondary small">
-                                    {{ report.locale|upper }}{% if not report.showNonBillable %}, tylko płatne{% endif %}
+                                    {{ report.locale|upper }}{% if not report.showNonBillable %}, {{ 'index.billable_only'|trans }}{% endif %}
                                 </div>
                             </td>
                             <td>
                                 <input type="text" class="form-control form-control-sm font-monospace" readonly
                                        value="{{ url }}" onclick="this.select();document.execCommand('copy');">
-                                <div class="text-secondary small">kliknij, żeby skopiować</div>
+                                <div class="text-secondary small">{{ 'index.click_to_copy'|trans }}</div>
                             </td>
                             <td class="text-center">
                                 {{ report.views }}
                                 {% if report.lastViewAt %}
-                                    <div class="text-secondary small text-nowrap">{{ report.lastViewAt|date('d.m.Y H:i') }}</div>
+                                    <div class="text-secondary small text-nowrap">{{ report.lastViewAt|date_time }}</div>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if report.revoked %}
-                                    <span class="badge bg-red-lt">unieważniony</span>
+                                    <span class="badge bg-red-lt">{{ 'index.status.revoked'|trans }}</span>
                                 {% elseif report.expired %}
-                                    <span class="badge bg-orange-lt">wygasł</span>
+                                    <span class="badge bg-orange-lt">{{ 'index.status.expired'|trans }}</span>
                                 {% else %}
-                                    <span class="badge bg-green-lt">aktywny</span>
+                                    <span class="badge bg-green-lt">{{ 'index.status.active'|trans }}</span>
                                 {% endif %}
                                 {% if report.expiresAt %}
-                                    <div class="text-secondary small text-nowrap">do {{ report.expiresAt|date('d.m.Y') }}</div>
+                                    <div class="text-secondary small text-nowrap">{{ 'index.expires_on'|trans({'%date%': report.expiresAt|date_short}) }}</div>
                                 {% endif %}
                             </td>
                             <td class="text-nowrap">
-                                <a href="{{ url }}" target="_blank" class="btn btn-sm">Otwórz</a>
+                                <a href="{{ url }}" target="_blank" class="btn btn-sm">{{ 'index.action.open'|trans }}</a>
                                 {% if report.revoked %}
                                     <a href="{{ path('client_report_restore', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
-                                       class="btn btn-sm">Przywróć</a>
+                                       class="btn btn-sm">{{ 'index.action.restore'|trans }}</a>
                                 {% else %}
                                     <a href="{{ path('client_report_revoke', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
-                                       class="btn btn-sm">Unieważnij</a>
+                                       class="btn btn-sm">{{ 'index.action.revoke'|trans }}</a>
                                 {% endif %}
                                 <a href="{{ path('client_report_delete', {'id': report.id, 'csrfToken': csrf_token('client_report')}) }}"
                                    class="btn btn-sm btn-ghost-danger"
-                                   onclick="return confirm('Usunąć ten link na stałe?');">Usuń</a>
+                                   onclick="return confirm('{{ 'index.confirm_delete'|trans|e('js') }}');">{{ 'index.action.delete'|trans }}</a>
                             </td>
                         </tr>
                     {% endfor %}

@@ -6,6 +6,7 @@ use App\Mail\KimaiMailer;
 use KimaiPlugin\ClientReportBundle\Entity\SharedReport;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Tells the person who created a link that the client has opened it.
@@ -19,6 +20,7 @@ final class ShareNotifier
     public function __construct(
         private readonly KimaiMailer $mailer,
         private readonly LoggerInterface $logger,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -37,19 +39,23 @@ final class ShareNotifier
             $report->getDateEnd()?->format('d.m.Y') ?? '?'
         );
 
-        $body = <<<TEXT
-            Klient otworzył raport po raz pierwszy.
+        // the mail goes out while the client is browsing, so the request locale is
+        // theirs - the creator's own UI language is the one to write in
+        $language = $creator->getLanguage();
+        $t = fn (string $key, array $params = []): string => $this->translator->trans($key, $params, 'client_report', $language);
 
-            Zakres:  {$scope}
-            Okres:   {$period}
-            Link:    {$url}
-
-            Wiadomość wychodzi tylko przy pierwszym otwarciu. Kolejne wejścia widać
-            w liczniku: Raportowanie > Raporty dla klientów.
-            TEXT;
+        $body = implode("\n", [
+            $t('mail.intro'),
+            '',
+            \sprintf('%s: %s', $t('mail.scope'), $scope),
+            \sprintf('%s: %s', $t('mail.period'), $period),
+            \sprintf('%s: %s', $t('mail.link'), $url),
+            '',
+            $t('mail.footer'),
+        ]);
 
         $email = (new Email())
-            ->subject(\sprintf('Klient otworzył raport: %s (%s)', $scope, $period))
+            ->subject($t('mail.subject', ['%scope%' => $scope, '%period%' => $period]))
             ->text($body);
 
         try {
@@ -57,7 +63,7 @@ final class ShareNotifier
         } catch (\Throwable $exception) {
             // the client is waiting for a page - a broken mail relay must not turn
             // their report into an error page
-            $this->logger->error('ClientReport: nie udało się wysłać powiadomienia o otwarciu raportu', [
+            $this->logger->error('ClientReport: could not send the first view notification', [
                 'report' => $report->getId(),
                 'exception' => $exception->getMessage(),
             ]);

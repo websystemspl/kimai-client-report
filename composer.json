@@ -2,7 +2,7 @@
     "name": "websystemspl/client-report-bundle",
     "description": "Share a time report with a client under a public link, as a web page or PDF.",
     "type": "kimai-plugin",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "homepage": "https://github.com/websystemspl/kimai-client-report",
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
         "kimai": {
             "name": "ClientReport",
             "require": 20000,
-            "version": "1.0.0"
+            "version": "1.1.0"
         }
     }
 }
