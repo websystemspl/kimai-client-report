@@ -68,6 +68,16 @@ class SharedReport
     private Collection $tags;
 
     /**
+     * Projects left out of a customer-wide report, e.g. a fixed-price project that
+     * is invoiced separately and must not show up among the billed hours.
+     *
+     * @var Collection<int, Project>
+     */
+    #[ORM\ManyToMany(targetEntity: Project::class)]
+    #[ORM\JoinTable(name: 'kimai2_shared_reports_excluded_projects')]
+    private Collection $excludedProjects;
+
+    /**
      * Whether unpaid entries are listed as well. They are always counted in the
      * summary, so the client can see "66 of 87 hours billed" instead of a shorter
      * list with no explanation of what is missing.
@@ -104,6 +114,7 @@ class SharedReport
         $this->users = new ArrayCollection();
         $this->activities = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->excludedProjects = new ArrayCollection();
     }
 
     /** @return Collection<int, User> */
@@ -160,13 +171,32 @@ class SharedReport
         $this->tags->removeElement($tag);
     }
 
+    /** @return Collection<int, Project> */
+    public function getExcludedProjects(): Collection
+    {
+        return $this->excludedProjects;
+    }
+
+    public function addExcludedProject(Project $project): void
+    {
+        if (!$this->excludedProjects->contains($project)) {
+            $this->excludedProjects->add($project);
+        }
+    }
+
+    public function removeExcludedProject(Project $project): void
+    {
+        $this->excludedProjects->removeElement($project);
+    }
+
     /**
      * True when the report is narrowed beyond the project or customer, which is
      * worth saying on the admin list so nobody wonders why hours are missing.
      */
     public function hasExtraFilters(): bool
     {
-        return \count($this->users) > 0 || \count($this->activities) > 0 || \count($this->tags) > 0;
+        return \count($this->users) > 0 || \count($this->activities) > 0 || \count($this->tags) > 0
+            || \count($this->excludedProjects) > 0;
     }
 
     public function getId(): ?int

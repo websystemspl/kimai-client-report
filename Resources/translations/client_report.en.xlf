@@ -46,6 +46,10 @@
         <source>index.all_projects</source>
         <target>all projects</target>
       </trans-unit>
+      <trans-unit id="index.excluded_projects">
+        <source>index.excluded_projects</source>
+        <target>without</target>
+      </trans-unit>
       <trans-unit id="index.billable_only">
         <source>index.billable_only</source>
         <target>billable only</target>
@@ -137,6 +141,14 @@
       <trans-unit id="form.activities.help">
         <source>form.activities.help</source>
         <target>Empty = all of them.</target>
+      </trans-unit>
+      <trans-unit id="form.excluded_projects">
+        <source>form.excluded_projects</source>
+        <target>Leave out these projects (optional)</target>
+      </trans-unit>
+      <trans-unit id="form.excluded_projects.help">
+        <source>form.excluded_projects.help</source>
+        <target>For a customer-wide report: hours of these projects are neither listed nor counted, e.g. a fixed-price project invoiced separately.</target>
       </trans-unit>
       <trans-unit id="form.tags">
         <source>form.tags</source>

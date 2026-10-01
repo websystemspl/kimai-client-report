@@ -122,6 +122,20 @@ final class ReportBuilder
 
         // no current user is set on purpose: the person who created the share already
         // decided what the client may see, and there is nobody logged in to check against
-        return $this->repository->getTimesheetsForQuery($query, true);
+        $entries = $this->repository->getTimesheetsForQuery($query, true);
+
+        // TimesheetQuery can only include projects, so exclusions are applied here
+        $excluded = [];
+        foreach ($report->getExcludedProjects() as $project) {
+            $excluded[$project->getId()] = true;
+        }
+        if ($excluded === []) {
+            return $entries;
+        }
+
+        return array_values(array_filter(
+            $entries,
+            static fn (Timesheet $t): bool => !isset($excluded[$t->getProject()?->getId()])
+        ));
     }
 }

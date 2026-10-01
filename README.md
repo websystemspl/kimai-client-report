@@ -24,7 +24,8 @@ instance.
 - **Two report languages** (English, Polish), chosen when the link is created. A foreign
   client gets English regardless of the settings of the account that created the link.
 - Scope: one project or a whole customer, any date range, optionally narrowed to
-  selected users, activities or tags.
+  selected users, activities or tags. A customer-wide report can leave out chosen
+  projects, e.g. a fixed-price project invoiced separately.
 - **Email notification on first open** of the link by the client, sent to the person
   who created it. Later visits show up in the counter, without an email.
 - **"Share with the client" button on the Kimai Export screen**, carrying over the filters
@@ -32,7 +33,7 @@ instance.
 - Company logo on the page and in the PDF.
 
 Repository: <https://github.com/websystemspl/kimai-client-report> (public, MIT).
-Release with a ZIP package: `releases/tag/v1.1.0`.
+Release with a ZIP package: `releases/tag/v1.2.0`.
 
 ## How it differs from Customer Portal
 
@@ -154,7 +155,7 @@ Controller/ShareController.php  public page and PDF
 Controller/SharedReportController.php  panel: list, create, revoke
 EventSubscriber/MenuSubscriber.php       menu entry
 EventSubscriber/ExportPageSubscriber.php button on the Kimai Export screen
-Migrations/                     tables: reports + three filter tables
+Migrations/                     tables: reports + filter tables
 Resources/assets/logo.png       logo inserted into the report
 Resources/views/public/         client page and PDF template
 Resources/views/admin/          list and form in the panel

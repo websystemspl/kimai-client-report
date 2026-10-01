@@ -24,7 +24,8 @@ instancją.
 - **Dwa języki raportu** (angielski, polski), wybierane przy tworzeniu linku - klient
   zagraniczny dostaje angielski niezależnie od ustawień konta, które link stworzyło.
 - Zakres: jeden projekt albo cały klient, dowolny zakres dat, opcjonalnie zawężony
-  do wybranych osób, rodzajów pracy albo tagów.
+  do wybranych osób, rodzajów pracy albo tagów. Raport dla całego klienta może pominąć
+  wybrane projekty, np. ryczałtowy, fakturowany osobno.
 - **Powiadomienie mailem przy pierwszym otwarciu** linku przez klienta - do osoby,
   która link utworzyła. Kolejne wejścia widać w liczniku, maila nie ma.
 - **Przycisk „Udostępnij klientowi" na ekranie Eksportu Kimai**, z przeniesieniem
@@ -32,7 +33,7 @@ instancją.
 - Logo firmy na stronie i w PDF.
 
 Repo: <https://github.com/websystemspl/kimai-client-report> (publiczne, MIT).
-Wydanie z paczką ZIP: `releases/tag/v1.1.0`.
+Wydanie z paczką ZIP: `releases/tag/v1.2.0`.
 
 ## Instalacja
 
@@ -131,7 +132,7 @@ Controller/ShareController.php  strona publiczna i PDF
 Controller/SharedReportController.php  panel: lista, tworzenie, unieważnianie
 EventSubscriber/MenuSubscriber.php       pozycja w menu
 EventSubscriber/ExportPageSubscriber.php przycisk na ekranie Eksportu Kimai
-Migrations/                     tabele: raporty + trzy tabele filtrów
+Migrations/                     tabele: raporty + tabele filtrów
 Resources/assets/logo.png       logo wstawiane do raportu
 Resources/views/public/         strona dla klienta i szablon PDF
 Resources/views/admin/          lista i formularz w panelu

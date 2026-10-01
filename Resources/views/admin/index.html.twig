@@ -36,6 +36,9 @@
                                     <div class="text-secondary small">{{ report.customerName }}</div>
                                 {% else %}
                                     <div class="text-secondary small">{{ 'index.all_projects'|trans }}</div>
+                                    {% if report.excludedProjects|length > 0 %}
+                                        <div class="text-secondary small">{{ 'index.excluded_projects'|trans }}: {{ report.excludedProjects|map(p => p.name)|join(', ') }}</div>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td class="text-nowrap">

@@ -46,6 +46,10 @@
         <source>index.all_projects</source>
         <target>wszystkie projekty</target>
       </trans-unit>
+      <trans-unit id="index.excluded_projects">
+        <source>index.excluded_projects</source>
+        <target>bez</target>
+      </trans-unit>
       <trans-unit id="index.billable_only">
         <source>index.billable_only</source>
         <target>tylko płatne</target>
@@ -137,6 +141,14 @@
       <trans-unit id="form.activities.help">
         <source>form.activities.help</source>
         <target>Puste = wszystkie.</target>
+      </trans-unit>
+      <trans-unit id="form.excluded_projects">
+        <source>form.excluded_projects</source>
+        <target>Pomiń te projekty (opcjonalnie)</target>
+      </trans-unit>
+      <trans-unit id="form.excluded_projects.help">
+        <source>form.excluded_projects.help</source>
+        <target>Przy raporcie dla całego klienta: godziny tych projektów nie są ani pokazywane, ani liczone, np. projekt ryczałtowy fakturowany osobno.</target>
       </trans-unit>
       <trans-unit id="form.tags">
         <source>form.tags</source>

@@ -3,6 +3,7 @@
 namespace KimaiPlugin\ClientReportBundle\Form;
 
 use App\Entity\Activity;
+use App\Entity\Project;
 use App\Entity\Tag;
 use App\Entity\User;
 use App\Form\Type\CustomerType;
@@ -49,6 +50,18 @@ final class SharedReportType extends AbstractType
             ->add('dateEnd', DatePickerType::class, [
                 'input' => 'datetime_immutable',
                 'label' => 'form.date_end',
+            ])
+            ->add('excludedProjects', EntityType::class, [
+                'class' => Project::class,
+                'multiple' => true,
+                'required' => false,
+                'label' => 'form.excluded_projects',
+                'help' => 'form.excluded_projects.help',
+                'choice_label' => static fn (Project $project): string => $project->getCustomer()?->getName() . ' - ' . $project->getName(),
+                'query_builder' => static fn (EntityRepository $repo) => $repo->createQueryBuilder('p')
+                    ->join('p.customer', 'c')
+                    ->orderBy('c.name', 'ASC')
+                    ->addOrderBy('p.name', 'ASC'),
             ])
             ->add('users', EntityType::class, [
                 'class' => User::class,
