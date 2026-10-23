@@ -35,8 +35,8 @@ instance.
 - Company logo on the page and in the PDF.
 
 Repository: <https://github.com/websystemspl/kimai-client-report> (public, MIT).
-Releases with a ZIP package: `releases`. The `mcp/` and `tests/` directories are not
-needed inside Kimai and can be left out of `var/plugins/`.
+Release with a ZIP package: `releases/tag/v1.3.0`. The ZIP leaves out `mcp/` and `tests/`,
+which are not needed inside Kimai.
 
 ## How it differs from Customer Portal
 

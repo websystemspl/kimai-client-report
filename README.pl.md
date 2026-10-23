@@ -35,7 +35,7 @@ instancją.
 - Logo firmy na stronie i w PDF.
 
 Repo: <https://github.com/websystemspl/kimai-client-report> (publiczne, MIT).
-Wydanie z paczką ZIP: `releases/tag/v1.2.0`.
+Wydanie z paczką ZIP: `releases/tag/v1.3.0`. Katalogi `mcp/` i `tests/` nie są potrzebne w Kimai, ZIP ich nie zawiera.
 
 ## Raport pracy (wewnętrzny, od 1.3.0)
 
