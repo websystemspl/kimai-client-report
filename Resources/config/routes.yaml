@@ -8,3 +8,17 @@ client_report_admin:
     prefix: /{_locale}
     defaults:
         _locale: '%locale%'
+
+# internal work report in the panel (behind login, like the rest of Kimai)
+client_report_work:
+    resource: '../../Controller/WorkReportController.php'
+    type: attribute
+    prefix: /{_locale}
+    defaults:
+        _locale: '%locale%'
+
+# everything under /api goes through Kimai's API firewall (Bearer token)
+client_report_api:
+    resource: '../../Controller/Api/'
+    type: attribute
+    prefix: /api

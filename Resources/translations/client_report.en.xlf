@@ -234,6 +234,286 @@
         <source>mail.footer</source>
         <target>This message is sent on the first view only. Later views show up in the counter: Reporting &gt; Client reports.</target>
       </trans-unit>
+      <trans-unit id="menu.work_report">
+        <source>menu.work_report</source>
+        <target>Work report</target>
+      </trans-unit>
+      <trans-unit id="error.no_dates">
+        <source>error.no_dates</source>
+        <target>Both dates are required.</target>
+      </trans-unit>
+      <trans-unit id="work.heading">
+        <source>work.heading</source>
+        <target>Work report</target>
+      </trans-unit>
+      <trans-unit id="work.period.today">
+        <source>work.period.today</source>
+        <target>Today</target>
+      </trans-unit>
+      <trans-unit id="work.period.yesterday">
+        <source>work.period.yesterday</source>
+        <target>Yesterday</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_week">
+        <source>work.period.this_week</source>
+        <target>This week</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_week">
+        <source>work.period.last_week</source>
+        <target>Last week</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_month">
+        <source>work.period.this_month</source>
+        <target>This month</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_month">
+        <source>work.period.last_month</source>
+        <target>Last month</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_year">
+        <source>work.period.this_year</source>
+        <target>This year</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_year">
+        <source>work.period.last_year</source>
+        <target>Last year</target>
+      </trans-unit>
+      <trans-unit id="work.filter.begin">
+        <source>work.filter.begin</source>
+        <target>From</target>
+      </trans-unit>
+      <trans-unit id="work.filter.end">
+        <source>work.filter.end</source>
+        <target>To</target>
+      </trans-unit>
+      <trans-unit id="work.filter.users">
+        <source>work.filter.users</source>
+        <target>People</target>
+      </trans-unit>
+      <trans-unit id="work.filter.everyone">
+        <source>work.filter.everyone</source>
+        <target>Everyone</target>
+      </trans-unit>
+      <trans-unit id="work.filter.disabled">
+        <source>work.filter.disabled</source>
+        <target>inactive</target>
+      </trans-unit>
+      <trans-unit id="work.filter.teams">
+        <source>work.filter.teams</source>
+        <target>Teams</target>
+      </trans-unit>
+      <trans-unit id="work.filter.customers">
+        <source>work.filter.customers</source>
+        <target>Customers</target>
+      </trans-unit>
+      <trans-unit id="work.filter.projects">
+        <source>work.filter.projects</source>
+        <target>Projects</target>
+      </trans-unit>
+      <trans-unit id="work.filter.activities">
+        <source>work.filter.activities</source>
+        <target>Types of work</target>
+      </trans-unit>
+      <trans-unit id="work.filter.tags">
+        <source>work.filter.tags</source>
+        <target>Tags</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable">
+        <source>work.filter.billable</source>
+        <target>Billable</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.all">
+        <source>work.filter.billable.all</source>
+        <target>All entries</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.yes">
+        <source>work.filter.billable.yes</source>
+        <target>Billable only</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.no">
+        <source>work.filter.billable.no</source>
+        <target>Non-billable only</target>
+      </trans-unit>
+      <trans-unit id="work.filter.submit">
+        <source>work.filter.submit</source>
+        <target>Show</target>
+      </trans-unit>
+      <trans-unit id="work.filter.pdf">
+        <source>work.filter.pdf</source>
+        <target>Download PDF</target>
+      </trans-unit>
+      <trans-unit id="work.filter.reset">
+        <source>work.filter.reset</source>
+        <target>Reset</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.total">
+        <source>work.kpi.total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.billable">
+        <source>work.kpi.billable</source>
+        <target>Billable</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.non_billable">
+        <source>work.kpi.non_billable</source>
+        <target>Non-billable</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.entries">
+        <source>work.kpi.entries</source>
+        <target>Entries</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.people">
+        <source>work.kpi.people</source>
+        <target>People</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.days">
+        <source>work.kpi.days</source>
+        <target>Days with time</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.of_days">
+        <source>work.kpi.of_days</source>
+        <target>of %days% in the period</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.warnings">
+        <source>work.kpi.warnings</source>
+        <target>Warnings</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.running">
+        <source>work.kpi.running</source>
+        <target>%count% running, not counted</target>
+      </trans-unit>
+      <trans-unit id="work.grid.heading">
+        <source>work.grid.heading</source>
+        <target>People and days</target>
+      </trans-unit>
+      <trans-unit id="work.grid.person">
+        <source>work.grid.person</source>
+        <target>Person</target>
+      </trans-unit>
+      <trans-unit id="work.grid.total">
+        <source>work.grid.total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="work.grid.too_long">
+        <source>work.grid.too_long</source>
+        <target>The period is longer than 31 days, so the day-by-day grid is hidden. Totals per person are above.</target>
+      </trans-unit>
+      <trans-unit id="work.projects.heading">
+        <source>work.projects.heading</source>
+        <target>Projects</target>
+      </trans-unit>
+      <trans-unit id="work.activities.heading">
+        <source>work.activities.heading</source>
+        <target>Types of work</target>
+      </trans-unit>
+      <trans-unit id="work.col.project">
+        <source>work.col.project</source>
+        <target>Project</target>
+      </trans-unit>
+      <trans-unit id="work.col.people">
+        <source>work.col.people</source>
+        <target>People</target>
+      </trans-unit>
+      <trans-unit id="work.col.hours">
+        <source>work.col.hours</source>
+        <target>Hours</target>
+      </trans-unit>
+      <trans-unit id="work.col.share">
+        <source>work.col.share</source>
+        <target>Share</target>
+      </trans-unit>
+      <trans-unit id="work.col.time">
+        <source>work.col.time</source>
+        <target>Time</target>
+      </trans-unit>
+      <trans-unit id="work.col.activity">
+        <source>work.col.activity</source>
+        <target>Type of work</target>
+      </trans-unit>
+      <trans-unit id="work.col.description">
+        <source>work.col.description</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="work.col.duration">
+        <source>work.col.duration</source>
+        <target>Duration</target>
+      </trans-unit>
+      <trans-unit id="work.no_description">
+        <source>work.no_description</source>
+        <target>No description</target>
+      </trans-unit>
+      <trans-unit id="work.non_billable">
+        <source>work.non_billable</source>
+        <target>non-billable</target>
+      </trans-unit>
+      <trans-unit id="work.empty">
+        <source>work.empty</source>
+        <target>No time was tracked in this period for the selected filters.</target>
+      </trans-unit>
+      <trans-unit id="work.footer">
+        <source>work.footer</source>
+        <target>Times in %tz%. An entry counts on the day it begins. Running entries are not part of any total. Generated %date%.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.heading">
+        <source>work.warnings.heading</source>
+        <target>Worth checking</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.since">
+        <source>work.warnings.since</source>
+        <target>since</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlap_by">
+        <source>work.warnings.overlap_by</source>
+        <target>overlap</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.running">
+        <source>work.warnings.running</source>
+        <target>Running entries</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.running.help">
+        <source>work.warnings.running.help</source>
+        <target>Still running, so they are not part of the totals yet.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.missingDescription">
+        <source>work.warnings.missingDescription</source>
+        <target>Without description</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.missingDescription.help">
+        <source>work.warnings.missingDescription.help</source>
+        <target>Counted in the totals, but nobody will know what the time was spent on.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlaps">
+        <source>work.warnings.overlaps</source>
+        <target>Overlapping entries</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlaps.help">
+        <source>work.warnings.overlaps.help</source>
+        <target>The same person tracked two things at the same time. Both entries are counted in full.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longEntries">
+        <source>work.warnings.longEntries</source>
+        <target>Entries over 10 hours</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longEntries.help">
+        <source>work.warnings.longEntries.help</source>
+        <target>Often a timer that was left running.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longDays">
+        <source>work.warnings.longDays</source>
+        <target>Days over 12 hours</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longDays.help">
+        <source>work.warnings.longDays.help</source>
+        <target>Total for one person on one day.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.crossMidnight">
+        <source>work.warnings.crossMidnight</source>
+        <target>Entries past midnight</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.crossMidnight.help">
+        <source>work.warnings.crossMidnight.help</source>
+        <target>Counted in full on the day they began.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

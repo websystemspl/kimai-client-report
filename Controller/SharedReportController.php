@@ -9,8 +9,10 @@ use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
 use KimaiPlugin\ClientReportBundle\Entity\SharedReport;
 use KimaiPlugin\ClientReportBundle\Form\SharedReportType;
+use KimaiPlugin\ClientReportBundle\Report\SharedReportManager;
 use KimaiPlugin\ClientReportBundle\Repository\SharedReportRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,6 +30,7 @@ final class SharedReportController extends AbstractController
         private readonly UserRepository $users,
         private readonly ActivityRepository $activities,
         private readonly TranslatorInterface $translator,
+        private readonly SharedReportManager $manager,
     ) {
     }
 
@@ -52,23 +55,14 @@ final class SharedReportController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($report->getProject() === null && $report->getCustomer() === null) {
-                $form->get('project')->addError(new \Symfony\Component\Form\FormError($this->trans('error.no_scope')));
-            } elseif ($report->getDateEnd() < $report->getDateStart()) {
-                $form->get('dateEnd')->addError(new \Symfony\Component\Form\FormError($this->trans('error.end_before_start')));
+            $problem = $this->manager->validate($report);
+            if ($problem === 'error.end_before_start') {
+                $form->get('dateEnd')->addError(new FormError($this->trans($problem)));
+            } elseif ($problem !== null) {
+                $form->get('project')->addError(new FormError($this->trans($problem)));
             } else {
-                // a project already carries its customer, keeping both would only
-                // widen the report to everything that customer has
-                if ($report->getProject() !== null) {
-                    $report->setCustomer(null);
-                }
-
                 $user = $this->getUser();
-                if ($user instanceof User) {
-                    $report->setCreatedBy($user);
-                }
-
-                $this->reports->save($report);
+                $this->manager->create($report, $user instanceof User ? $user : null);
                 $this->addFlash('success', $this->trans('flash.created'));
 
                 return $this->redirectToRoute('client_report_index');

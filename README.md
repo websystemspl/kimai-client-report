@@ -1,7 +1,9 @@
 # ClientReport - time reports under a public link
 
 A plugin for Kimai 2.x. It does what Kimai core does not: **a URL where a client opens
-a report of hours without logging in**, as a web page and as a PDF.
+a report of hours without logging in**, as a web page and as a PDF. Since 1.3.0 also an
+**internal work report** (who worked on what, per person or team, any period, with
+PDF), a **JSON API** for both, and an **MCP server** for agents that write reports.
 
 Written for `kimai.web-systems.pl`, but there is nothing in it tied to that one
 instance.
@@ -33,7 +35,8 @@ instance.
 - Company logo on the page and in the PDF.
 
 Repository: <https://github.com/websystemspl/kimai-client-report> (public, MIT).
-Release with a ZIP package: `releases/tag/v1.2.0`.
+Releases with a ZIP package: `releases`. The `mcp/` and `tests/` directories are not
+needed inside Kimai and can be left out of `var/plugins/`.
 
 ## How it differs from Customer Portal
 
@@ -52,6 +55,142 @@ password, rates, budgets and charts. ClientReport is built for a different momen
   sees a view counter.
 - The report language is set per link, not taken from the creator's account.
 - A report is created straight from the Export screen, with the filters already set.
+
+## Work report (internal, since 1.3.0)
+
+Menu **Reporting > Work report** (*Raportowanie > Raport pracy*). Who worked on what
+and for how long, for one person, several people, a team or everyone, over a day, a
+week, a month or any range up to 366 days:
+
+- period shortcuts (today, yesterday, this/last week, month, year) and free dates,
+- filters: people, teams, customers, projects, types of work, tags, billable,
+- totals (all, billable, non-billable, entries, days with time),
+- a people-by-days grid (for ranges up to 31 days),
+- hours per project (with who worked on it) and per type of work,
+- **warnings**: overlapping entries of one person, running timers, entries without a
+  description, entries over 10 h, days over 12 h, entries past midnight,
+- every entry, grouped by person and day, with its description,
+- **Download PDF** with the same content (landscape when the grid is wider than a week).
+
+Who sees what: everyone with access to reporting can open it. People without the
+permission to see other users' times get their own time only; a teamlead sees the
+teams they lead; admins see everyone.
+
+Rules behind the numbers, the same in the panel, the PDF and the API:
+
+- durations are whole seconds; `h:mm` is cut to full minutes,
+- an entry counts on the day it begins, in the report timezone (the viewer's by default),
+- running entries are listed as a warning and are **not** in any total,
+- every breakdown (people, days, projects, customers, types of work, entries) is summed
+  again and compared with the grand total before the report is shown. A difference of
+  one second refuses the report instead of showing wrong numbers.
+
+## API
+
+All routes sit under Kimai's `/api` and use its authentication:
+`Authorization: Bearer <API token>` (Kimai > Profile > API).
+
+### Work report
+
+```
+GET /api/work-report?period=this_week&users=j.doe
+GET /api/work-report?begin=2026-10-01&end=2026-10-31&teams=1&billable=1&entries=0
+GET /api/work-report/pdf?period=last_month&locale=pl
+```
+
+| Parameter | Meaning |
+|---|---|
+| `period` | `today`, `yesterday`, `this_week`, `last_week`, `this_month`, `last_month`, `this_year`, `last_year` |
+| `begin`, `end` | `YYYY-MM-DD`, both inclusive, instead of `period` (not together) |
+| `users` | ids or logins, `users[]=1&users[]=2` or `users=1,2` |
+| `teams`, `customers`, `projects`, `activities` | ids |
+| `tags` | ids or names (entries with any of them) |
+| `billable` | `1` billable only, `0` non-billable only, empty = all |
+| `entries` | `0` leaves the entry list out (totals only) |
+| `timezone` | IANA name, default: the token owner's timezone |
+| `locale` | PDF only: `pl` or `en` |
+
+The parser is strict: an unknown id, an impossible date (`2026-02-31`), `end` before
+`begin`, a range over 366 days, or a user the caller may not see is an error
+(`400`/`403`/`404`, body `{"code": ..., "message": ...}`), never a silently smaller
+report.
+
+The answer is the exact array the panel renders: `meta` (period, timezone, filters,
+rules), `totals`, `days`, `users` (with per-day and per-project seconds), `projects`
+(with per-person seconds), `customers`, `activities`, `tags`, `warnings`,
+`warningCount`, `integrity`, `entries`, `links` (panel and PDF URL) and, for whoever
+may see rates, `amounts` plus rate fields on every entry.
+
+### Client links
+
+Teamlead and up, like the panel.
+
+```
+GET    /api/client-reports?state=active&customer=3      list (state: active, revoked, expired)
+POST   /api/client-reports                               create, returns url and pdfUrl
+GET    /api/client-reports/{id}                          one link with views
+GET    /api/client-reports/{id}/data                     the numbers the client will see
+DELETE /api/client-reports/{id}                          revoke (row stays)
+DELETE /api/client-reports/{id}?purge=1                  delete for good
+POST   /api/client-reports/{id}/restore                  undo revoke
+```
+
+```
+curl -X POST https://kimai.example.com/api/client-reports \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"project": 12, "begin": "2026-10-19", "end": "2026-10-25", "locale": "pl",
+       "showNonBillable": true, "title": "Week 43"}'
+```
+
+Body fields: `customer` or `project` (exactly one), `begin`, `end`, `locale` (`en`/`pl`),
+`showNonBillable`, `title`, `expiresAt`, `users[]`, `activities[]`, `tags[]`,
+`excludedProjects[]`. Unknown fields are rejected, so a typo does not create a report
+with a filter missing. Panel and API create links through the same
+`SharedReportManager`.
+
+## MCP server for agents
+
+`mcp/kimai-mcp.mjs` is an MCP server (stdio, Node 18+, no dependencies) on top of the
+API above and Kimai's own API. It is meant for an agent that writes reports for you or
+for clients, so it is built to keep the agent from doing arithmetic: totals come
+finished from `/api/work-report`, and the first block of every answer is a plain-text
+summary to quote.
+
+Tools: `kimai_status`, `kimai_work_report`, `kimai_work_report_pdf`, `kimai_timesheets`
+(raw entries, all pages), `kimai_list_users`, `kimai_list_teams`,
+`kimai_list_customers`, `kimai_list_projects`, `kimai_list_activities`, `kimai_find`,
+`kimai_client_report_create`, `kimai_client_report_list`, `kimai_client_report_data`,
+`kimai_client_report_revoke`, `kimai_client_report_restore`.
+
+People, customers, projects and the rest can be given by id or by name. A name has to
+match exactly one item (exact match first, then a unique partial one, ignoring case and
+accents); otherwise the tool fails and lists the candidates instead of guessing.
+
+```
+claude mcp add -s user kimai \
+  -e KIMAI_URL=https://kimai.example.com \
+  -e KIMAI_TOKEN_FILE=$HOME/.config/kimai-mcp/token \
+  -e KIMAI_PDF_DIR=$HOME/Downloads \
+  -- node /path/to/kimai-client-report/mcp/kimai-mcp.mjs
+```
+
+`KIMAI_TOKEN` works instead of `KIMAI_TOKEN_FILE`; the file keeps the token out of the
+client configuration. The agent sees exactly what the token owner may see.
+
+## Tests
+
+Live checks against a Kimai instance (they read data; the contract test creates one
+client link and deletes it again):
+
+```
+export KIMAI_URL=https://kimai.example.com KIMAI_TOKEN_FILE=~/.config/kimai-mcp/token
+node tests/verify-work-report.mjs     # report vs. raw /api/timesheets, every person and period
+KIMAI_USER_TOKEN=<plain user token> node tests/verify-api-contract.mjs   # validation, permissions, client links, PDF
+node tests/verify-mcp.mjs "Name"      # MCP server end to end
+```
+
+`verify-work-report` recomputes every total, per person, per day, per project, each
+entry's duration and description from Kimai's raw entries and fails on any difference.
 
 ## Installation
 
@@ -153,6 +292,15 @@ Report/ShareNotifier.php        email on first open of a link
 Form/SharedReportType.php       link creation form
 Controller/ShareController.php  public page and PDF
 Controller/SharedReportController.php  panel: list, create, revoke
+Controller/WorkReportController.php    panel: work report page and its PDF
+Controller/Api/                 /api/work-report and /api/client-reports
+Report/SharedReportManager.php  one creation path for panel and API
+WorkReport/WorkReportRequestParser.php  strict query string parser (panel, PDF, API)
+WorkReport/WorkReportBuilder.php        totals, breakdowns, warnings, integrity check
+WorkReport/WorkReportPdf.php            PDF rendering shared by panel and API
+Resources/views/work/           work report page and PDF template
+mcp/kimai-mcp.mjs               MCP server for agents (not deployed into Kimai)
+tests/                          live verification scripts (not deployed into Kimai)
 EventSubscriber/MenuSubscriber.php       menu entry
 EventSubscriber/ExportPageSubscriber.php button on the Kimai Export screen
 Migrations/                     tables: reports + filter tables
@@ -166,6 +314,7 @@ Resources/translations/         admin panel strings (client_report domain, EN/PL
 
 - Several projects in one report (it is either one project or a whole customer).
 - Brand configuration from the panel: logo and company name live in plugin files.
-- Rates and amounts; the report shows time only.
+- Rates and amounts in the client report, which shows time only (the work report API
+  returns amounts when rates are set in Kimai).
 - A preview of the report from the panel before sending the link (you have to open
   the link).

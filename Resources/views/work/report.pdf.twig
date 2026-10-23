@@ -1,0 +1,203 @@
+{% trans_default_domain 'client_report' %}
+{% import '@ClientReport/public/_macros.html.twig' as fmt %}
+{% set grid = r.meta.days <= 31 %}
+{% set f = r.meta.filters %}
+<!doctype html>
+<html lang="{{ locale }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ 'work.heading'|trans }} {{ r.meta.begin }} - {{ r.meta.end }}</title>
+    {# mPDF understands neither flexbox nor grid, so everything here is tables #}
+    <style>
+        body { font-family: sans-serif; font-size: 8.5pt; color: #1f2430; }
+        h1 { font-size: 15pt; margin: 0 0 1mm; }
+        h2 { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.3pt; color: #6b7280; margin: 5mm 0 2mm; }
+        h3 { font-size: 11pt; margin: 6mm 0 2mm; }
+        .muted { color: #6b7280; }
+        .warn { color: #c2410c; }
+        .num { text-align: right; }
+        .center { text-align: center; }
+        table { width: 100%; border-collapse: collapse; }
+        table.summary td { border: 0.2mm solid #e6e8ec; padding: 2.5mm; text-align: center; }
+        table.summary .label { font-size: 7pt; text-transform: uppercase; color: #6b7280; }
+        table.summary .value { font-size: 13pt; font-weight: bold; }
+        table.list th { font-size: 7pt; text-transform: uppercase; color: #6b7280; text-align: left; border-bottom: 0.3mm solid #b9bec7; padding: 1.5mm; }
+        table.list td { border-bottom: 0.2mm solid #e6e8ec; padding: 1.5mm; vertical-align: top; }
+        table.list tr.day td { background: #f3f4f6; font-weight: bold; }
+        table.list tr.total td { border-top: 0.3mm solid #b9bec7; font-weight: bold; }
+        td.weekend, th.weekend { background: #f6f7f9; }
+    </style>
+</head>
+<body>
+{% if branding.logoDataUri %}
+    <img src="{{ branding.logoDataUri }}" alt="{{ branding.company }}" style="height: 8mm; margin-bottom: 3mm;">
+{% endif %}
+<h1>{{ 'work.heading'|trans }}</h1>
+<div class="muted">
+    {{ r.meta.begin|date('d.m.Y') }} - {{ r.meta.end|date('d.m.Y') }} ({{ r.meta.timezone }})
+    {% if f.users is not empty %} &middot; {{ f.users|map(u => u.name)|join(', ') }}{% endif %}
+    {% if f.teams is not empty %} &middot; {{ 'work.filter.teams'|trans }}: {{ f.teams|map(x => x.name)|join(', ') }}{% endif %}
+    {% if f.customers is not empty %} &middot; {{ 'work.filter.customers'|trans }}: {{ f.customers|map(x => x.name)|join(', ') }}{% endif %}
+    {% if f.projects is not empty %} &middot; {{ 'work.filter.projects'|trans }}: {{ f.projects|map(x => x.name)|join(', ') }}{% endif %}
+    {% if f.activities is not empty %} &middot; {{ 'work.filter.activities'|trans }}: {{ f.activities|map(x => x.name)|join(', ') }}{% endif %}
+    {% if f.tags is not empty %} &middot; {{ 'work.filter.tags'|trans }}: {{ f.tags|map(x => x.name)|join(', ') }}{% endif %}
+    {% if f.billable is not null %} &middot; {{ f.billable ? 'work.filter.billable.yes'|trans : 'work.filter.billable.no'|trans }}{% endif %}
+</div>
+
+<table class="summary" style="margin-top: 4mm;">
+    <tr>
+        <td><div class="label">{{ 'work.kpi.total'|trans }}</div><div class="value">{{ r.totals.hm }}</div></td>
+        <td><div class="label">{{ 'work.kpi.billable'|trans }}</div><div class="value">{{ r.totals.billableHm }}</div></td>
+        <td><div class="label">{{ 'work.kpi.non_billable'|trans }}</div><div class="value muted">{{ r.totals.nonBillableHm }}</div></td>
+        <td><div class="label">{{ 'work.kpi.entries'|trans }}</div><div class="value">{{ r.totals.entries }}</div></td>
+        <td><div class="label">{{ 'work.kpi.days'|trans }}</div><div class="value">{{ r.totals.daysWithTime }}</div></td>
+        <td><div class="label">{{ 'work.kpi.warnings'|trans }}</div><div class="value{% if r.warningCount > 0 %} warn{% endif %}">{{ r.warningCount }}</div></td>
+    </tr>
+</table>
+
+{% if r.totals.entries == 0 %}
+    <p class="muted">{{ 'work.empty'|trans }}</p>
+{% else %}
+
+<h2>{{ 'work.grid.heading'|trans }}</h2>
+<table class="list">
+    <thead><tr>
+        <th>{{ 'work.grid.person'|trans }}</th>
+        {% if grid %}
+            {% for day in r.days %}
+                <th class="center{% if day.weekday >= 6 %} weekend{% endif %}">{{ day.date|format_date(pattern: 'EEE', locale: locale) }} {{ day.date|date('d.m') }}</th>
+            {% endfor %}
+        {% endif %}
+        <th class="num">{{ 'work.grid.total'|trans }}</th>
+        <th class="num">{{ 'work.kpi.billable'|trans }}</th>
+    </tr></thead>
+    <tbody>
+    {% for u in r.users %}
+        <tr>
+            <td>{{ u.name }}</td>
+            {% if grid %}
+                {% for day in r.days %}
+                    {% set s = u.days[day.date] ?? 0 %}
+                    <td class="center{% if day.weekday >= 6 %} weekend{% endif %}{% if s == 0 %} muted{% endif %}">{{ s > 0 ? fmt.hm(s) : '-' }}</td>
+                {% endfor %}
+            {% endif %}
+            <td class="num"><b>{{ u.hm }}</b></td>
+            <td class="num">{{ u.billableHm }}</td>
+        </tr>
+    {% endfor %}
+    <tr class="total">
+        <td>{{ 'work.grid.total'|trans }}</td>
+        {% if grid %}
+            {% for day in r.days %}
+                <td class="center{% if day.weekday >= 6 %} weekend{% endif %}">{{ day.seconds > 0 ? day.hm : '-' }}</td>
+            {% endfor %}
+        {% endif %}
+        <td class="num">{{ r.totals.hm }}</td>
+        <td class="num">{{ r.totals.billableHm }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>{{ 'work.projects.heading'|trans }}</h2>
+<table class="list">
+    <thead><tr>
+        <th>{{ 'work.col.project'|trans }}</th>
+        <th>{{ 'work.col.people'|trans }}</th>
+        <th class="num">{{ 'work.col.hours'|trans }}</th>
+        <th class="num">{{ 'work.kpi.billable'|trans }}</th>
+        <th class="num">{{ 'work.col.share'|trans }}</th>
+    </tr></thead>
+    <tbody>
+    {% for p in r.projects %}
+        <tr>
+            <td>{{ p.customer ? p.customer.name ~ ' - ' : '' }}{{ p.name }}</td>
+            <td>{{ p.users|map(u => u.name ~ ' ' ~ u.hm)|join(', ') }}</td>
+            <td class="num"><b>{{ p.hm }}</b></td>
+            <td class="num">{{ p.billableHm }}</td>
+            <td class="num">{{ p.share }}%</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>{{ 'work.activities.heading'|trans }}</h2>
+<table class="list">
+    <tbody>
+    {% for a in r.activities %}
+        <tr><td>{{ a.name }}</td><td class="num"><b>{{ a.hm }}</b></td><td class="num">{{ a.share }}%</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if r.warningCount > 0 %}
+    <h2>{{ 'work.warnings.heading'|trans }} ({{ r.warningCount }})</h2>
+    <table class="list">
+        <tbody>
+        {% for type, items in r.warnings %}
+            {% for w in items %}
+                <tr>
+                    <td class="warn" width="22%">{{ ('work.warnings.' ~ type)|trans }}</td>
+                    <td width="18%">{{ w.user.name }}</td>
+                    <td width="12%">{{ w.date|date('d.m.Y') }}</td>
+                    <td>
+                        {% if type == 'overlaps' %}
+                            {{ w.first.begin|date('H:i', false) }}-{{ w.first.end|date('H:i', false) }} {{ w.first.project }} &amp;
+                            {{ w.second.begin|date('H:i', false) }}-{{ w.second.end|date('H:i', false) }} {{ w.second.project }} ({{ w.hm }})
+                        {% elseif type == 'longDays' %}
+                            {{ w.hm }}
+                        {% elseif type == 'running' %}
+                            {{ 'work.warnings.since'|trans }} {{ w.begin|date('H:i', false) }}, {{ w.project }}
+                        {% else %}
+                            {{ w.begin|date('H:i', false) }}-{{ w.end ? w.end|date('H:i', false) : '' }}, {{ w.project }}, {{ w.hm }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% for u in r.users %}
+    {% set mine = (r.entries ?? [])|filter(e => e.user.id == u.id) %}
+    <h3>{{ u.name }} - {{ u.hm }} <span class="muted" style="font-size: 8pt;">({{ 'work.kpi.billable'|trans|lower }} {{ u.billableHm }})</span></h3>
+    <table class="list">
+        <thead><tr>
+            <th width="11%">{{ 'work.col.time'|trans }}</th>
+            <th width="22%">{{ 'work.col.project'|trans }}</th>
+            <th width="14%">{{ 'work.col.activity'|trans }}</th>
+            <th>{{ 'work.col.description'|trans }}</th>
+            <th width="8%" class="num">{{ 'work.col.duration'|trans }}</th>
+        </tr></thead>
+        <tbody>
+        {% set lastDate = null %}
+        {% for e in mine %}
+            {% if e.date != lastDate %}
+                {% set lastDate = e.date %}
+                <tr class="day">
+                    <td colspan="4">{{ e.date|format_date(pattern: 'EEEE, d.MM.yyyy', locale: locale) }}</td>
+                    <td class="num">{{ fmt.hm(u.days[e.date]) }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td class="muted">{{ e.begin|date('H:i', false) }}-{{ e.end ? e.end|date('H:i', false) : '' }}</td>
+                <td>{{ e.project ? e.project.name : '' }}<br><span class="muted">{{ e.customer ? e.customer.name : '' }}</span></td>
+                <td>{{ e.activity ? e.activity.name : '' }}</td>
+                <td>
+                    {% if e.description %}{{ e.description|nl2br }}{% else %}<span class="warn">{{ 'work.no_description'|trans }}</span>{% endif %}
+                    {% if e.tags is not empty %} <span class="muted">[{{ e.tags|join(', ') }}]</span>{% endif %}
+                    {% if not e.billable %} <span class="muted">({{ 'work.non_billable'|trans }})</span>{% endif %}
+                </td>
+                <td class="num"><b>{{ e.hm }}</b></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}
+{% endif %}
+
+<p class="muted" style="margin-top: 6mm;">
+    {{ 'work.footer'|trans({'%tz%': r.meta.timezone, '%date%': r.meta.generatedAt|date('d.m.Y H:i', false)}) }} &middot; {{ branding.company }}
+</p>
+</body>
+</html>

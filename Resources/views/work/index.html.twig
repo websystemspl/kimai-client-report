@@ -1,0 +1,321 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'client_report' %}
+{% import '@ClientReport/public/_macros.html.twig' as fmt %}
+
+{% block title %}{{ 'work.heading'|trans }}{% endblock %}
+
+{% block main %}
+    {% set locale = app.request.locale %}
+    {% set grid = r.meta.days <= 31 %}
+
+    {# ---------- filters ---------- #}
+    <div class="card mb-3">
+        <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <h3 class="card-title mb-0">{{ 'work.heading'|trans }}</h3>
+            <div class="btn-list">
+                {% for preset in presets %}
+                    <a href="{{ preset.url }}" class="btn btn-sm {{ preset.active ? 'btn-primary' : '' }}">{{ ('work.period.' ~ preset.key)|trans }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card-body">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            <form method="get" action="{{ path('work_report') }}" id="work-report-filter">
+                <div class="row g-2">
+                    <div class="col-6 col-md-2">
+                        <label class="form-label" for="wr-begin">{{ 'work.filter.begin'|trans }}</label>
+                        <input type="date" class="form-control" id="wr-begin" name="begin" value="{{ r.meta.begin }}" required>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label" for="wr-end">{{ 'work.filter.end'|trans }}</label>
+                        <input type="date" class="form-control" id="wr-end" name="end" value="{{ r.meta.end }}" required>
+                    </div>
+                    {% if see_others %}
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="wr-users">{{ 'work.filter.users'|trans }}</label>
+                            <select class="form-select selectpicker" id="wr-users" name="users[]" multiple data-placeholder="{{ 'work.filter.everyone'|trans }}">
+                                {% for u in options.users %}
+                                    <option value="{{ u.id }}" {{ selected.users[u.id] is defined ? 'selected' : '' }}>{{ u.displayName }}{% if not u.enabled %} ({{ 'work.filter.disabled'|trans }}){% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if options.teams is not empty %}
+                            <div class="col-12 col-md-4">
+                                <label class="form-label" for="wr-teams">{{ 'work.filter.teams'|trans }}</label>
+                                <select class="form-select selectpicker" id="wr-teams" name="teams[]" multiple>
+                                    {% for t in options.teams %}
+                                        <option value="{{ t.id }}" {{ selected.teams[t.id] is defined ? 'selected' : '' }}>{{ t.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="wr-customers">{{ 'work.filter.customers'|trans }}</label>
+                        <select class="form-select selectpicker" id="wr-customers" name="customers[]" multiple>
+                            {% for c in options.customers %}
+                                <option value="{{ c.id }}" {{ selected.customers[c.id] is defined ? 'selected' : '' }}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="wr-projects">{{ 'work.filter.projects'|trans }}</label>
+                        <select class="form-select selectpicker" id="wr-projects" name="projects[]" multiple>
+                            {% for p in options.projects %}
+                                <option value="{{ p.id }}" {{ selected.projects[p.id] is defined ? 'selected' : '' }}>{{ p.customer ? p.customer.name ~ ' - ' : '' }}{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="wr-activities">{{ 'work.filter.activities'|trans }}</label>
+                        <select class="form-select selectpicker" id="wr-activities" name="activities[]" multiple>
+                            {% for a in options.activities %}
+                                <option value="{{ a.id }}" {{ selected.activities[a.id] is defined ? 'selected' : '' }}>{{ a.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if options.tags is not empty %}
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="wr-tags">{{ 'work.filter.tags'|trans }}</label>
+                            <select class="form-select selectpicker" id="wr-tags" name="tags[]" multiple>
+                                {% for t in options.tags %}
+                                    <option value="{{ t.id }}" {{ selected.tags[t.id] is defined ? 'selected' : '' }}>{{ t.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="wr-billable">{{ 'work.filter.billable'|trans }}</label>
+                        <select class="form-select w-100" id="wr-billable" name="billable">
+                            <option value="" {{ query.billable is null ? 'selected' : '' }}>{{ 'work.filter.billable.all'|trans }}</option>
+                            <option value="1" {{ query.billable is same as(true) ? 'selected' : '' }}>{{ 'work.filter.billable.yes'|trans }}</option>
+                            <option value="0" {{ query.billable is same as(false) ? 'selected' : '' }}>{{ 'work.filter.billable.no'|trans }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3 btn-list">
+                    <button type="submit" class="btn btn-primary">{{ 'work.filter.submit'|trans }}</button>
+                    <a href="{{ path('work_report_pdf', pdf_params) }}" class="btn">{{ 'work.filter.pdf'|trans }}</a>
+                    <a href="{{ path('work_report') }}" class="btn btn-ghost-secondary">{{ 'work.filter.reset'|trans }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# ---------- summary ---------- #}
+    <div class="row row-cards mb-3">
+        {% set tiles = [
+            {label: 'work.kpi.total', value: r.totals.hm, sub: r.totals.hours ~ ' h'},
+            {label: 'work.kpi.billable', value: r.totals.billableHm, sub: r.totals.seconds > 0 ? ((r.totals.billableSeconds / r.totals.seconds * 100)|round(1) ~ '%') : ''},
+            {label: 'work.kpi.non_billable', value: r.totals.nonBillableHm, sub: ''},
+            {label: 'work.kpi.entries', value: r.totals.entries, sub: 'work.kpi.people'|trans ~ ': ' ~ r.totals.users},
+            {label: 'work.kpi.days', value: r.totals.daysWithTime, sub: 'work.kpi.of_days'|trans({'%days%': r.meta.days})},
+            {label: 'work.kpi.warnings', value: r.warningCount, sub: r.totals.runningExcluded > 0 ? 'work.kpi.running'|trans({'%count%': r.totals.runningExcluded}) : ''},
+        ] %}
+        {% for tile in tiles %}
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card card-sm h-100">
+                    <div class="card-body">
+                        <div class="subheader">{{ tile.label|trans }}</div>
+                        <div class="h2 mb-0 mt-1{% if tile.label == 'work.kpi.warnings' and tile.value > 0 %} text-orange{% endif %}">{{ tile.value }}</div>
+                        <div class="text-secondary small">{{ tile.sub }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if r.totals.entries == 0 and r.warnings.running is empty %}
+        <div class="card mb-3"><div class="card-body text-secondary">{{ 'work.empty'|trans }}</div></div>
+    {% else %}
+
+    {# ---------- people x days ---------- #}
+    <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title mb-0">{{ 'work.grid.heading'|trans }}</h3></div>
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter table-sm">
+                <thead>
+                <tr>
+                    <th>{{ 'work.grid.person'|trans }}</th>
+                    {% if grid %}
+                        {% for day in r.days %}
+                            <th class="text-center text-nowrap{% if day.weekday >= 6 %} bg-light{% endif %}">{{ day.date|format_date(pattern: 'EEE', locale: locale) }}<br><span class="text-secondary">{{ day.date|date('d.m') }}</span></th>
+                        {% endfor %}
+                    {% endif %}
+                    <th class="text-end">{{ 'work.grid.total'|trans }}</th>
+                    <th class="text-end">{{ 'work.kpi.billable'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for u in r.users %}
+                    <tr>
+                        <td class="text-nowrap"><a href="#wr-user-{{ u.id }}">{{ u.name }}</a></td>
+                        {% if grid %}
+                            {% for day in r.days %}
+                                {% set s = u.days[day.date] ?? 0 %}
+                                <td class="text-center{% if day.weekday >= 6 %} bg-light{% endif %}{% if s == 0 %} text-secondary{% endif %}">{{ s > 0 ? fmt.hm(s) : '-' }}</td>
+                            {% endfor %}
+                        {% endif %}
+                        <td class="text-end fw-bold">{{ u.hm }}</td>
+                        <td class="text-end">{{ u.billableHm }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                {% if r.users|length > 1 or not grid %}
+                    <tfoot>
+                    <tr class="fw-bold">
+                        <td>{{ 'work.grid.total'|trans }}</td>
+                        {% if grid %}
+                            {% for day in r.days %}
+                                <td class="text-center{% if day.weekday >= 6 %} bg-light{% endif %}">{{ day.seconds > 0 ? day.hm : '-' }}</td>
+                            {% endfor %}
+                        {% endif %}
+                        <td class="text-end">{{ r.totals.hm }}</td>
+                        <td class="text-end">{{ r.totals.billableHm }}</td>
+                    </tr>
+                    </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        {% if not grid %}
+            <div class="card-footer text-secondary small">{{ 'work.grid.too_long'|trans }}</div>
+        {% endif %}
+    </div>
+
+    {# ---------- projects and types of work ---------- #}
+    <div class="row row-cards mb-3">
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-header"><h3 class="card-title mb-0">{{ 'work.projects.heading'|trans }}</h3></div>
+                <div class="table-responsive">
+                    <table class="table card-table table-vcenter table-sm">
+                        <thead><tr>
+                            <th>{{ 'work.col.project'|trans }}</th>
+                            <th>{{ 'work.col.people'|trans }}</th>
+                            <th class="text-end">{{ 'work.col.hours'|trans }}</th>
+                            <th class="text-end">{{ 'work.kpi.billable'|trans }}</th>
+                            <th class="w-25">{{ 'work.col.share'|trans }}</th>
+                        </tr></thead>
+                        <tbody>
+                        {% for p in r.projects %}
+                            <tr>
+                                <td>{{ p.name }}<div class="text-secondary small">{{ p.customer ? p.customer.name : '' }}</div></td>
+                                <td class="small">{{ p.users|map(u => u.name ~ ' ' ~ u.hm)|join(', ') }}</td>
+                                <td class="text-end fw-bold text-nowrap">{{ p.hm }}</td>
+                                <td class="text-end text-nowrap">{{ p.billableHm }}</td>
+                                <td>
+                                    <div class="progress progress-sm"><div class="progress-bar" style="width: {{ p.share }}%"></div></div>
+                                    <div class="text-secondary small">{{ p.share }}%</div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header"><h3 class="card-title mb-0">{{ 'work.activities.heading'|trans }}</h3></div>
+                <div class="table-responsive">
+                    <table class="table card-table table-vcenter table-sm">
+                        <tbody>
+                        {% for a in r.activities %}
+                            <tr>
+                                <td>{{ a.name }}</td>
+                                <td class="text-end fw-bold text-nowrap">{{ a.hm }}</td>
+                                <td class="text-end text-secondary">{{ a.share }}%</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ---------- warnings ---------- #}
+    {% if r.warningCount > 0 %}
+        <div class="card mb-3 border-orange">
+            <div class="card-header"><h3 class="card-title mb-0">{{ 'work.warnings.heading'|trans }} ({{ r.warningCount }})</h3></div>
+            <div class="card-body">
+                {% for type, items in r.warnings %}
+                    {% if items is not empty %}
+                        <h4 class="mb-1">{{ ('work.warnings.' ~ type)|trans }} ({{ items|length }})</h4>
+                        <p class="text-secondary small mb-2">{{ ('work.warnings.' ~ type ~ '.help')|trans }}</p>
+                        <ul class="mb-3">
+                            {% for w in items %}
+                                <li>
+                                    <strong>{{ w.user.name }}</strong>, {{ w.date|date('d.m.Y') }}:
+                                    {% if type == 'overlaps' %}
+                                        {{ w.first.begin|date('H:i', false) }}-{{ w.first.end|date('H:i', false) }} {{ w.first.project }}
+                                        &amp; {{ w.second.begin|date('H:i', false) }}-{{ w.second.end|date('H:i', false) }} {{ w.second.project }}
+                                        ({{ 'work.warnings.overlap_by'|trans }} {{ w.hm }})
+                                    {% elseif type == 'longDays' %}
+                                        {{ w.hm }}
+                                    {% elseif type == 'running' %}
+                                        {{ 'work.warnings.since'|trans }} {{ w.begin|date('H:i', false) }}, {{ w.project }}{% if w.description %} - {{ w.description }}{% endif %}
+                                    {% else %}
+                                        {{ w.begin|date('H:i', false) }}-{{ w.end ? w.end|date('H:i', false) : '' }}, {{ w.project }}, {{ w.hm }}{% if w.description %} - {{ w.description|length > 80 ? w.description|slice(0, 80) ~ '...' : w.description }}{% endif %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# ---------- details per person ---------- #}
+    {% for u in r.users %}
+        {% set mine = (r.entries ?? [])|filter(e => e.user.id == u.id) %}
+        <div class="card mb-3" id="wr-user-{{ u.id }}">
+            <div class="card-header d-flex justify-content-between">
+                <h3 class="card-title mb-0">{{ u.name }}</h3>
+                <div><strong>{{ u.hm }}</strong> <span class="text-secondary">({{ 'work.kpi.billable'|trans|lower }} {{ u.billableHm }}, {{ u.entries }} {{ 'work.kpi.entries'|trans|lower }})</span></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table card-table table-sm">
+                    <thead><tr>
+                        <th class="w-1">{{ 'work.col.time'|trans }}</th>
+                        <th>{{ 'work.col.project'|trans }}</th>
+                        <th>{{ 'work.col.activity'|trans }}</th>
+                        <th>{{ 'work.col.description'|trans }}</th>
+                        <th class="text-end w-1">{{ 'work.col.duration'|trans }}</th>
+                    </tr></thead>
+                    <tbody>
+                    {% set lastDate = null %}
+                    {% for e in mine %}
+                        {% if e.date != lastDate %}
+                            {% set lastDate = e.date %}
+                            <tr class="bg-light">
+                                <td colspan="4" class="fw-bold">{{ e.date|format_date(pattern: 'EEEE, d.MM.yyyy', locale: locale) }}</td>
+                                <td class="text-end fw-bold">{{ fmt.hm(u.days[e.date]) }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="text-nowrap text-secondary">{{ e.begin|date('H:i', false) }}-{{ e.end ? e.end|date('H:i', false) : '' }}</td>
+                            <td>{{ e.project ? e.project.name : '' }}<div class="text-secondary small">{{ e.customer ? e.customer.name : '' }}</div></td>
+                            <td class="small">{{ e.activity ? e.activity.name : '' }}</td>
+                            <td>
+                                {% if e.description %}{{ e.description|nl2br }}{% else %}<span class="text-orange">{{ 'work.no_description'|trans }}</span>{% endif %}
+                                {% for tag in e.tags %}<span class="badge bg-secondary-lt ms-1">{{ tag }}</span>{% endfor %}
+                                {% if not e.billable %}<span class="badge bg-yellow-lt ms-1">{{ 'work.non_billable'|trans }}</span>{% endif %}
+                            </td>
+                            <td class="text-end text-nowrap fw-bold">{{ e.hm }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+
+    <p class="text-secondary small">
+        {{ 'work.footer'|trans({'%tz%': r.meta.timezone, '%date%': r.meta.generatedAt|date('d.m.Y H:i', false)}) }}
+    </p>
+{% endblock %}

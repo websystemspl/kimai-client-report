@@ -20,6 +20,18 @@ final class MenuSubscriber implements EventSubscriberInterface
 
     public function onMenuConfigure(ConfigureMainMenuEvent $event): void
     {
+        $reporting = $event->getReportingMenu();
+        $parent = $reporting ?? $event->getMenu();
+
+        // the work report is open to everyone who may see reports: people without
+        // access to other users' times get their own time only
+        if ($this->security->isGranted('view_reporting')) {
+            $work = new MenuItemModel('work_report', 'menu.work_report', 'work_report', [], 'reporting');
+            $work->setTranslationDomain('client_report');
+            $work->setChildRoutes(['work_report_pdf']);
+            $parent->addChild($work);
+        }
+
         if (!$this->security->isGranted('ROLE_TEAMLEAD')) {
             return;
         }
@@ -34,13 +46,6 @@ final class MenuSubscriber implements EventSubscriberInterface
         $item->setTranslationDomain('client_report');
         $item->setChildRoutes(['client_report_create']);
 
-        $reporting = $event->getReportingMenu();
-        if ($reporting !== null) {
-            $reporting->addChild($item);
-
-            return;
-        }
-
-        $event->getMenu()->addChild($item);
+        $parent->addChild($item);
     }
 }

@@ -234,6 +234,286 @@
         <source>mail.footer</source>
         <target>Wiadomość wychodzi tylko przy pierwszym otwarciu. Kolejne wejścia widać w liczniku: Raportowanie &gt; Raporty dla klientów.</target>
       </trans-unit>
+      <trans-unit id="menu.work_report">
+        <source>menu.work_report</source>
+        <target>Raport pracy</target>
+      </trans-unit>
+      <trans-unit id="error.no_dates">
+        <source>error.no_dates</source>
+        <target>Obie daty są wymagane.</target>
+      </trans-unit>
+      <trans-unit id="work.heading">
+        <source>work.heading</source>
+        <target>Raport pracy</target>
+      </trans-unit>
+      <trans-unit id="work.period.today">
+        <source>work.period.today</source>
+        <target>Dziś</target>
+      </trans-unit>
+      <trans-unit id="work.period.yesterday">
+        <source>work.period.yesterday</source>
+        <target>Wczoraj</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_week">
+        <source>work.period.this_week</source>
+        <target>Ten tydzień</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_week">
+        <source>work.period.last_week</source>
+        <target>Poprzedni tydzień</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_month">
+        <source>work.period.this_month</source>
+        <target>Ten miesiąc</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_month">
+        <source>work.period.last_month</source>
+        <target>Poprzedni miesiąc</target>
+      </trans-unit>
+      <trans-unit id="work.period.this_year">
+        <source>work.period.this_year</source>
+        <target>Ten rok</target>
+      </trans-unit>
+      <trans-unit id="work.period.last_year">
+        <source>work.period.last_year</source>
+        <target>Poprzedni rok</target>
+      </trans-unit>
+      <trans-unit id="work.filter.begin">
+        <source>work.filter.begin</source>
+        <target>Od</target>
+      </trans-unit>
+      <trans-unit id="work.filter.end">
+        <source>work.filter.end</source>
+        <target>Do</target>
+      </trans-unit>
+      <trans-unit id="work.filter.users">
+        <source>work.filter.users</source>
+        <target>Osoby</target>
+      </trans-unit>
+      <trans-unit id="work.filter.everyone">
+        <source>work.filter.everyone</source>
+        <target>Wszyscy</target>
+      </trans-unit>
+      <trans-unit id="work.filter.disabled">
+        <source>work.filter.disabled</source>
+        <target>nieaktywny</target>
+      </trans-unit>
+      <trans-unit id="work.filter.teams">
+        <source>work.filter.teams</source>
+        <target>Zespoły</target>
+      </trans-unit>
+      <trans-unit id="work.filter.customers">
+        <source>work.filter.customers</source>
+        <target>Klienci</target>
+      </trans-unit>
+      <trans-unit id="work.filter.projects">
+        <source>work.filter.projects</source>
+        <target>Projekty</target>
+      </trans-unit>
+      <trans-unit id="work.filter.activities">
+        <source>work.filter.activities</source>
+        <target>Rodzaje pracy</target>
+      </trans-unit>
+      <trans-unit id="work.filter.tags">
+        <source>work.filter.tags</source>
+        <target>Tagi</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable">
+        <source>work.filter.billable</source>
+        <target>Płatność</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.all">
+        <source>work.filter.billable.all</source>
+        <target>Wszystkie wpisy</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.yes">
+        <source>work.filter.billable.yes</source>
+        <target>Tylko płatne</target>
+      </trans-unit>
+      <trans-unit id="work.filter.billable.no">
+        <source>work.filter.billable.no</source>
+        <target>Tylko nieodpłatne</target>
+      </trans-unit>
+      <trans-unit id="work.filter.submit">
+        <source>work.filter.submit</source>
+        <target>Pokaż</target>
+      </trans-unit>
+      <trans-unit id="work.filter.pdf">
+        <source>work.filter.pdf</source>
+        <target>Pobierz PDF</target>
+      </trans-unit>
+      <trans-unit id="work.filter.reset">
+        <source>work.filter.reset</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.total">
+        <source>work.kpi.total</source>
+        <target>Razem</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.billable">
+        <source>work.kpi.billable</source>
+        <target>Płatne</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.non_billable">
+        <source>work.kpi.non_billable</source>
+        <target>Nieodpłatne</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.entries">
+        <source>work.kpi.entries</source>
+        <target>Wpisy</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.people">
+        <source>work.kpi.people</source>
+        <target>Osoby</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.days">
+        <source>work.kpi.days</source>
+        <target>Dni z czasem</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.of_days">
+        <source>work.kpi.of_days</source>
+        <target>z %days% w okresie</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.warnings">
+        <source>work.kpi.warnings</source>
+        <target>Ostrzeżenia</target>
+      </trans-unit>
+      <trans-unit id="work.kpi.running">
+        <source>work.kpi.running</source>
+        <target>%count% w toku, poza sumą</target>
+      </trans-unit>
+      <trans-unit id="work.grid.heading">
+        <source>work.grid.heading</source>
+        <target>Osoby i dni</target>
+      </trans-unit>
+      <trans-unit id="work.grid.person">
+        <source>work.grid.person</source>
+        <target>Osoba</target>
+      </trans-unit>
+      <trans-unit id="work.grid.total">
+        <source>work.grid.total</source>
+        <target>Razem</target>
+      </trans-unit>
+      <trans-unit id="work.grid.too_long">
+        <source>work.grid.too_long</source>
+        <target>Okres jest dłuższy niż 31 dni, więc siatka dzienna jest ukryta. Sumy na osobę są powyżej.</target>
+      </trans-unit>
+      <trans-unit id="work.projects.heading">
+        <source>work.projects.heading</source>
+        <target>Projekty</target>
+      </trans-unit>
+      <trans-unit id="work.activities.heading">
+        <source>work.activities.heading</source>
+        <target>Rodzaje pracy</target>
+      </trans-unit>
+      <trans-unit id="work.col.project">
+        <source>work.col.project</source>
+        <target>Projekt</target>
+      </trans-unit>
+      <trans-unit id="work.col.people">
+        <source>work.col.people</source>
+        <target>Osoby</target>
+      </trans-unit>
+      <trans-unit id="work.col.hours">
+        <source>work.col.hours</source>
+        <target>Godziny</target>
+      </trans-unit>
+      <trans-unit id="work.col.share">
+        <source>work.col.share</source>
+        <target>Udział</target>
+      </trans-unit>
+      <trans-unit id="work.col.time">
+        <source>work.col.time</source>
+        <target>Godziny</target>
+      </trans-unit>
+      <trans-unit id="work.col.activity">
+        <source>work.col.activity</source>
+        <target>Rodzaj pracy</target>
+      </trans-unit>
+      <trans-unit id="work.col.description">
+        <source>work.col.description</source>
+        <target>Opis</target>
+      </trans-unit>
+      <trans-unit id="work.col.duration">
+        <source>work.col.duration</source>
+        <target>Czas</target>
+      </trans-unit>
+      <trans-unit id="work.no_description">
+        <source>work.no_description</source>
+        <target>Brak opisu</target>
+      </trans-unit>
+      <trans-unit id="work.non_billable">
+        <source>work.non_billable</source>
+        <target>nieodpłatne</target>
+      </trans-unit>
+      <trans-unit id="work.empty">
+        <source>work.empty</source>
+        <target>W tym okresie, przy tych filtrach, nie ma żadnych wpisów.</target>
+      </trans-unit>
+      <trans-unit id="work.footer">
+        <source>work.footer</source>
+        <target>Godziny w strefie %tz%. Wpis liczy się w dniu, w którym się zaczął. Wpisy w toku nie wchodzą do sum. Wygenerowano %date%.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.heading">
+        <source>work.warnings.heading</source>
+        <target>Do sprawdzenia</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.since">
+        <source>work.warnings.since</source>
+        <target>od</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlap_by">
+        <source>work.warnings.overlap_by</source>
+        <target>nakładka</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.running">
+        <source>work.warnings.running</source>
+        <target>Wpisy w toku</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.running.help">
+        <source>work.warnings.running.help</source>
+        <target>Jeszcze trwają, więc nie wchodzą do sum.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.missingDescription">
+        <source>work.warnings.missingDescription</source>
+        <target>Bez opisu</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.missingDescription.help">
+        <source>work.warnings.missingDescription.help</source>
+        <target>Wliczone do sum, ale nie wiadomo, nad czym była praca.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlaps">
+        <source>work.warnings.overlaps</source>
+        <target>Nakładające się wpisy</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.overlaps.help">
+        <source>work.warnings.overlaps.help</source>
+        <target>Ta sama osoba liczyła dwie rzeczy naraz. Oba wpisy są wliczone w całości.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longEntries">
+        <source>work.warnings.longEntries</source>
+        <target>Wpisy dłuższe niż 10 godzin</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longEntries.help">
+        <source>work.warnings.longEntries.help</source>
+        <target>Często to zapomniany, niezatrzymany licznik.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longDays">
+        <source>work.warnings.longDays</source>
+        <target>Dni powyżej 12 godzin</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.longDays.help">
+        <source>work.warnings.longDays.help</source>
+        <target>Suma jednej osoby w jednym dniu.</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.crossMidnight">
+        <source>work.warnings.crossMidnight</source>
+        <target>Wpisy przez północ</target>
+      </trans-unit>
+      <trans-unit id="work.warnings.crossMidnight.help">
+        <source>work.warnings.crossMidnight.help</source>
+        <target>Liczone w całości w dniu rozpoczęcia.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
