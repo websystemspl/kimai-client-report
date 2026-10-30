@@ -8,8 +8,10 @@ use KimaiPlugin\ClientReportBundle\Report\Branding;
 use KimaiPlugin\ClientReportBundle\Report\Labels;
 use KimaiPlugin\ClientReportBundle\Report\ReportBuilder;
 use KimaiPlugin\ClientReportBundle\Report\ShareNotifier;
+use KimaiPlugin\ClientReportBundle\Report\VisitFilter;
 use KimaiPlugin\ClientReportBundle\Repository\SharedReportRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -32,12 +34,17 @@ final class ShareController extends AbstractController
     }
 
     #[Route(path: '/{token}', name: 'client_report_share', requirements: ['token' => '[0-9a-f]{32}'], methods: ['GET'])]
-    public function show(string $token): Response
+    public function show(string $token, Request $request): Response
     {
         $report = $this->load($token);
 
         if ($report === null) {
             return $this->gone();
+        }
+
+        // previews and our own checks get the page, but neither the counter nor the email
+        if (!VisitFilter::countsAsClientVisit($request->headers->get('User-Agent'), $this->getUser() !== null)) {
+            return $this->render('@ClientReport/public/report.html.twig', $this->viewData($report));
         }
 
         $firstView = $report->getViews() === 0;
